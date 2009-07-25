@@ -1,15 +1,15 @@
 package org.seasar.dbflute.emecha.eclipse.plugin.core.config.http;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.seasar.dbflute.emecha.eclipse.plugin.core.meta.website.EmMetaFromWebSite;
+import org.seasar.dbflute.emecha.eclipse.plugin.unit.PlainTestCase;
 
 /**
  * 
  * @author jflute
  * @since 0.1.0 (2007/09/19 Wednesday)
  */
-public class EmHttpConfigTest {
+public class EmHttpConfigTest extends PlainTestCase {
 
     @Test
     public void test_EmHttpConfig_getLatestVersionS2Dao() throws Exception {
@@ -21,8 +21,8 @@ public class EmHttpConfigTest {
         final String latestVersionS2Dao = config.getLatestVersionS2Dao();
 
         // ## Assert ##
-        System.out.println(latestVersionS2Dao);
-        Assert.assertNotNull(latestVersionS2Dao);
+        log(latestVersionS2Dao);
+        assertNotNull(latestVersionS2Dao);
     }
 
     @Test
@@ -35,8 +35,8 @@ public class EmHttpConfigTest {
         final String latestVersionDBFlute = config.getLatestVersionDBFlute();
 
         // ## Assert ##
-        System.out.println(latestVersionDBFlute);
-        Assert.assertNotNull(latestVersionDBFlute);
+        log(latestVersionDBFlute);
+        assertNotNull(latestVersionDBFlute);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class EmHttpConfigTest {
         final String latestVersionDBFlute = config.getLatestSnapshotVersionDBFlute();
 
         // ## Assert ##
-        System.out.println(latestVersionDBFlute);
-        Assert.assertNotNull(latestVersionDBFlute);
+        log(latestVersionDBFlute);
+        assertNotNull(latestVersionDBFlute);
     }
 }

@@ -9,7 +9,7 @@ import org.junit.Assert;
 /**
  * @author jflute
  */
-public abstract class PlainTestCase {
+public abstract class PlainTestCase extends Assert {
 
     // ===================================================================================
     //                                                                          Definition
@@ -20,7 +20,7 @@ public abstract class PlainTestCase {
     //                                                                      General Helper
     //                                                                      ==============
     protected void log(Object msg) {
-    	System.out.println(msg);
+        System.out.println(msg);
     }
 
     protected Date currentDate() {
