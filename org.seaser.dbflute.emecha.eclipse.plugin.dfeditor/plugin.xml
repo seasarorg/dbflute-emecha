@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="DFProp Editor"
+            icon="icons/dfeditor.gif"
+            extensions="dfprop,dataprop"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            class="org.seaser.dbflute.emecha.eclipse.plugin.dfeditor.DFPropEditor"
+            id="org.seaser.dbflute.emecha.eclipse.plugin.dfeditor.DFPropEditor">
+            <contentTypeBinding
+                  contentTypeId="org.seaser.dbflute.emecha.eclipse.plugin.dfeditor.dfprop">
+            </contentTypeBinding>
+      </editor>
+   </extension>
+<!--
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            name="DFProp Configuration"
+            class="org.seaser.dbflute.emecha.eclipse.plugin.dfeditor.preferences.DFPropPreferencePage"
+            id="org.seaser.dbflute.emecha.eclipse.plugin.dfeditor.preferences.DFPropPreferencePage">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.seaser.dbflute.emecha.eclipse.plugin.dfeditor.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+-->
+</plugin>
