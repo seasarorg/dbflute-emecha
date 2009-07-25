@@ -1,0 +1,143 @@
+# /---------------------------------------------------------------------------
+# replaceSchemaDefinitionMap: (Default 'map:{}')
+#
+# The various settings about replace-schema.
+# 
+# o dataLoadingType (NotRequired - Default 'ut')
+# o isLoggingInsertSql (NotRequired - Default 'true')
+# o sqlFileEncoding (NotRequired - Default 'UTF-8')
+# o skipSheet (NotRequired - Default '')
+# o isIncrementSequenceToDataMax (NotRequired - Default 'false')
+# o isSuppressBatchUpdate (NotRequired - Default 'false')
+# o isDropGenerateTableOnly (NotRequired - Default 'false')
+# o filterVariablesMap (NotRequired - Default 'map:{}')
+# o additionalDropMapList (NotRequired - Default 'list:{}')
+# o isSuppressTruncateTable (NotRequired - Default 'false')
+# o isSuppressDropForeignKey (NotRequired - Default 'false')
+# o isSuppressDropTable (NotRequired - Default 'false')
+# 
+# Example:
+# map:{
+#     ; dataLoadingType = ut
+#     ; isLoggingInsertSql = true
+#     ; sqlFileEncoding = UTF-8
+#     ; skipSheet = P.+
+#     ; isIncrementSequenceToDataMax = false
+#     ; isSuppressBatchUpdate = false
+#     ; isDropGenerateTableOnly = false
+#     ; filterVariablesMap = map:{abc=AAA}
+#     ; additionalDropMapList = list:{
+#         ; map:{
+#             ; schema = NEXTEXAMPLEDB
+#             ; objectTypeList = list:{TABLE;VIEW}
+#             ; tableExceptList=list:{AAA}
+#             ; tableTargetList=list:{BBB}
+#         }
+#     }
+#     ; isSuppressTruncateTable = true
+#     ; isSuppressDropForeignKey = true
+#     ; isSuppressDropTable = true
+# }
+#
+# *The line that starts with '#' means comment-out.
+#
+map:{
+    # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # o dataLoadingType (NotRequired - Default 'ut')
+    #  The type of data loading.
+    #  If the value is 'ut', the target is './playsql/data/ut/...'.
+    #
+    ; dataLoadingType = ut
+    # - - - - - - - - - -/
+
+    # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # o isLoggingInsertSql (NotRequired - Default 'true')
+    #  Does it show insert values on log?
+    #
+    ; isLoggingInsertSql = true
+    # - - - - - - - - - -/
+
+    # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # o sqlFileEncoding (NotRequired - Default 'UTF-8')
+    #  The encoding of SQL(DDL) file for Replace Schema.
+    #  Basically you don't need this.
+    #
+    #; sqlFileEncoding = UTF-8
+    # - - - - - - - - - -/
+
+    # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # o skipSheet (NotRequired - Default '')
+    #  You can specify the skip sheet by regular expression
+    #
+    #; skipSheet = P.+
+    # - - - - - - - - - -/
+
+    # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # o isIncrementSequenceToDataMax (NotRequired - Default 'false')
+    #  Does it increment sequence values to max value of table data?
+    #  Referring the property 'sequenceDefinitionMap'.
+    #
+    #; isIncrementSequenceToDataMax = false
+    # - - - - - - - - - -/
+
+    # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # o isSuppressBatchUpdate (NotRequired - Default 'false')
+    #  Does it suppress batch update at loading data?
+    #  When you have a data error, you may get details for the error
+    #  by this property changing. Because it is possible that
+    #  the BatchUpdateException information is very short for debug.
+    #
+    #; isSuppressBatchUpdate = false
+    # - - - - - - - - - -/
+
+    # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # o isDropGenerateTableOnly (NotRequired - Default 'false')
+    #  Does it drop only generating target tables that are specified
+    #  in table-target or table-except setting?
+    #
+    #; isDropGenerateTableOnly = false
+    # - - - - - - - - - -/
+
+    # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # o filterVariablesMap (NotRequired - Default 'map:{}')
+    # You can specify the filter variables for DDL.
+    # 
+    #; filterVariablesMap = map:{abc=AAA}
+    # - - - - - - - - - -/
+
+    # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # o additionalDropMapList (NotRequired - Default 'list:{}')
+    # You can drop additional other schemas.
+    # 
+    #; additionalDropMapList = list:{
+    #    ; map:{
+    #        ; schema = NEXTEXAMPLEDB
+    #        ; objectTypeList = list:{TABLE;VIEW}
+    #        ; tableExceptList=list:{FULL_NAME ; prefix:PREFIX_ ; ...}
+    #        ; tableTargetList=list:{FULL_NAME ; prefix:PREFIX_ ; ...}
+    #    }
+    #}
+    # - - - - - - - - - -/
+
+    # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # o isSuppressTruncateTable (NotRequired - Default 'false')
+    # You can suppress truncating tables at initializing schema.
+    # 
+    #; isSuppressTruncateTable = false
+    # - - - - - - - - - -/
+
+    # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # o isSuppressDropForeignKey (NotRequired - Default 'false')
+    # You can suppress dropping foreign keys at initializing schema.
+    # 
+    #; isSuppressDropForeignKey = false
+    # - - - - - - - - - -/
+
+    # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # o isSuppressDropTable (NotRequired - Default 'false')
+    # You can suppress dropping tables at initializing schema.
+    # 
+    #; isSuppressDropTable = false
+    # - - - - - - - - - -/
+}
+# ----------------/
