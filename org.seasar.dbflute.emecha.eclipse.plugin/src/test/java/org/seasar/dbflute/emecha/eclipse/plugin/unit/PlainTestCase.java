@@ -1,12 +1,9 @@
 package org.seasar.dbflute.emecha.eclipse.plugin.unit;
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-import org.eclipse.core.internal.runtime.Log;
 import org.junit.Assert;
 
 /**
@@ -17,13 +14,13 @@ public abstract class PlainTestCase {
     // ===================================================================================
     //                                                                          Definition
     //                                                                          ==========
-    private static final Log _log = LogFactory.getLog(PlainTestCase.class);
+    //private static final Log _log = LogFactory.getLog(PlainTestCase.class);
 
     // ===================================================================================
     //                                                                      General Helper
     //                                                                      ==============
     protected void log(Object msg) {
-        _log.debug(msg);
+    	System.out.println(msg);
     }
 
     protected Date currentDate() {
@@ -34,22 +31,8 @@ public abstract class PlainTestCase {
         return new Timestamp(System.currentTimeMillis());
     }
 
-    protected String getLineSeparator() {
+    protected String ln() {
         return "\n";
-    }
-
-    // ===================================================================================
-    //                                                                           IO Helper
-    //                                                                           =========
-    protected String getCanonicalPath() {
-        final File buildDir = DfResourceUtil.getBuildDir(this.getClass());
-        final String canonicalPath;
-        try {
-            canonicalPath = buildDir.getCanonicalPath();
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
-        return canonicalPath;
     }
 
     // ===================================================================================
