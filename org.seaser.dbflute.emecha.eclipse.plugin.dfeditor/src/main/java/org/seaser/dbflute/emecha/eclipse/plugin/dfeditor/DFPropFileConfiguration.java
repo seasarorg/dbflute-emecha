@@ -9,6 +9,7 @@ import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
+import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.seaser.dbflute.emecha.eclipse.plugin.dfeditor.action.XMLDoubleClickStrategy;
 import org.seaser.dbflute.emecha.eclipse.plugin.dfeditor.scanner.BsDFPropScanner;
 import org.seaser.dbflute.emecha.eclipse.plugin.dfeditor.scanner.DFPropCommentScanner;
@@ -26,6 +27,10 @@ public class DFPropFileConfiguration extends TextSourceViewerConfiguration imple
 	public DFPropFileConfiguration(DfColorManager colorManager, IPreferenceStore preferenceStore) {
 		super(preferenceStore);
 		this.colorManager = colorManager;
+		if ( preferenceStore != null ) {
+		    // TODO TAG WHIDTH SETTING
+		    preferenceStore.setValue(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH, 4);
+		}
 	}
 	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
 		return new String[] {
