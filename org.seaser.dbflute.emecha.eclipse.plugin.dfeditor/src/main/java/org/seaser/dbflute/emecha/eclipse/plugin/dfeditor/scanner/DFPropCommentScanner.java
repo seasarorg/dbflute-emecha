@@ -24,27 +24,27 @@ public class DFPropCommentScanner extends BsDFPropScanner {
 		ArrayList<IRule> rules = new ArrayList<IRule>();
 		rules.add(new WhitespaceRule(new WhitespaceDetector()));
 
-		rules.add(new EndOfLineRule("#",getToken(DfColor.COMMENT)));
-		rules.add(new SingleLineRule("$$","$$",getToken(DfColor.BIND)));
+		rules.add(new EndOfLineRule("#",getToken(DfColor.LINE_COMMENT)));
+		rules.add(new SingleLineRule("$$","$$",getToken(DfColor.ALIAS_MARK)));
 		rules.add(new SingleLineRule("/*","*/",getToken(DfColor.SQL)));
 		rules.add(new SingleLineRule("\"","\"",getToken(DfColor.VALIABLE)));
 
 		CombinedWordRule wordRule = new CombinedWordRule();
 		CombinedWordRule.WordMatcher mapMacher = new CombinedWordRule.WordMatcher();
-		mapMacher.addWord("map:", getToken(DfColor.MAP));
+		mapMacher.addWord("map:", getToken(DfColor.MAP_MARK));
 		wordRule.addWordMatcher(mapMacher);
 		CombinedWordRule.WordMatcher listMacher = new CombinedWordRule.WordMatcher();
-		listMacher.addWord("list:", getToken(DfColor.MAP));
+		listMacher.addWord("list:", getToken(DfColor.LIST_MARK));
 		wordRule.addWordMatcher(listMacher);
 
 		CombinedWordRule.WordMatcher suffixMacher = new CombinedWordRule.WordMatcher();
-		suffixMacher.addWord("suffix:", getToken(DfColor.ELEMENT));
+		suffixMacher.addWord("suffix:", getToken(DfColor.LIKE_SEARCH_MARK));
 		wordRule.addWordMatcher(suffixMacher);
 		CombinedWordRule.WordMatcher prefixMacher = new CombinedWordRule.WordMatcher();
-		prefixMacher.addWord("prefix:", getToken(DfColor.ELEMENT));
+		prefixMacher.addWord("prefix:", getToken(DfColor.LIKE_SEARCH_MARK));
 		wordRule.addWordMatcher(prefixMacher);
 		CombinedWordRule.WordMatcher containMacher = new CombinedWordRule.WordMatcher();
-		containMacher.addWord("contain:", getToken(DfColor.ELEMENT));
+		containMacher.addWord("contain:", getToken(DfColor.LIKE_SEARCH_MARK));
 		wordRule.addWordMatcher(containMacher);
 
 		rules.add(wordRule);

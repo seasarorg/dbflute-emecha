@@ -6,13 +6,13 @@ import org.eclipse.swt.graphics.RGB;
 public enum DfColor {
 
 	DEFAULT(new RGB(0, 0, 0)),
-	COMMENT(new RGB(0, 128, 0)),
-	ELEMENT(new RGB(255, 64, 64)),
+	LINE_COMMENT(new RGB(0, 128, 0)),
+	LIKE_SEARCH_MARK(new RGB(0, 0, 255)),
 	VALIABLE(new RGB(100, 100, 255)),
-	MAP(new RGB(128, 0, 128), SWT.BOLD),
-	LIST(new RGB(128, 0, 128), SWT.BOLD),
+	MAP_MARK(new RGB(128, 0, 128), SWT.BOLD),
+	LIST_MARK(new RGB(128, 0, 128), SWT.BOLD),
 	SQL(new RGB(0, 128, 128)),
-	BIND(new RGB(0, 0, 255));
+	ALIAS_MARK(new RGB(0, 0, 255));
 
 	private RGB _foreground;
 	private RGB _background = null;
