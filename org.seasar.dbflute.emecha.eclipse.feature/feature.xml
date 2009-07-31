@@ -2,7 +2,7 @@
 <feature
       id="org.seasar.dbflute.emecha.eclipse.feature"
       label="EMecha Feature"
-      version="0.4.2">
+      version="0.4.2.01">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -20,14 +20,14 @@
          id="org.seasar.dbflute.emecha.eclipse.plugin"
          download-size="0"
          install-size="0"
-         version="0.4.2"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.seaser.dbflute.emecha.eclipse.plugin.dfeditor"
+         id="org.seasar.dbflute.emecha.eclipse.plugin.dfeditor"
          download-size="0"
          install-size="0"
-         version="0.0.1.2"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>
