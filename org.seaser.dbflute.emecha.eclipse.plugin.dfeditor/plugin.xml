@@ -9,10 +9,10 @@
             icon="icons/dfeditor.gif"
             extensions="dfprop,dataprop"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
-            class="org.seaser.dbflute.emecha.eclipse.plugin.dfeditor.DFPropEditor"
-            id="org.seaser.dbflute.emecha.eclipse.plugin.dfeditor.DFPropEditor">
+            class="org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.DFPropEditor"
+            id="org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.DFPropEditor">
             <contentTypeBinding
-                  contentTypeId="org.seaser.dbflute.emecha.eclipse.plugin.dfeditor.dfprop">
+                  contentTypeId="org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfprop">
             </contentTypeBinding>
       </editor>
    </extension>
@@ -21,14 +21,14 @@
          point="org.eclipse.ui.preferencePages">
       <page
             name="DFProp Configuration"
-            class="org.seaser.dbflute.emecha.eclipse.plugin.dfeditor.preferences.DFPropPreferencePage"
+            class="org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.preferences.DFPropPreferencePage"
             id="org.seaser.dbflute.emecha.eclipse.plugin.dfeditor.preferences.DFPropPreferencePage">
       </page>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="org.seaser.dbflute.emecha.eclipse.plugin.dfeditor.preferences.PreferenceInitializer">
+            class="org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.preferences.PreferenceInitializer">
       </initializer>
    </extension>
 -->
