@@ -15,42 +15,49 @@ import org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.rule.WhitespaceDetector
 
 public class DefaultTokenScanner extends BsDFPropScanner {
 
-	public DefaultTokenScanner(DfColorManager manager, IPreferenceStore store) {
-		super(manager, store);
-		setDefaultReturnToken(getToken(DfColor.DEFAULT));
-	}
+    public DefaultTokenScanner(DfColorManager manager, IPreferenceStore store) {
+        super(manager, store);
+        setDefaultReturnToken(getToken(DfColor.DEFAULT));
+    }
 
-	@Override
-	protected List<IRule> createRules() {
-		List<IRule> rules = new ArrayList<IRule>();
-		rules.add(new WhitespaceRule(new WhitespaceDetector()));
+    @Override
+    protected List<IRule> createRules() {
+        List<IRule> rules = new ArrayList<IRule>();
+        rules.add(new WhitespaceRule(new WhitespaceDetector()));
 
-		rules.add(new EndOfLineRule("#",getToken(DfColor.LINE_COMMENT)));
-		rules.add(new SingleLineRule("$$","$$",getToken(DfColor.ALIAS_MARK)));
-		rules.add(new SingleLineRule("/*","*/",getToken(DfColor.SQL)));
-		rules.add(new SingleLineRule("\"","\"",getToken(DfColor.VALIABLE)));
+        rules.add(new EndOfLineRule("#",getToken(DfColor.LINE_COMMENT)));
+        rules.add(new SingleLineRule("$$","$$",getToken(DfColor.ALIAS_MARK)));
+        rules.add(new SingleLineRule("/*","*/",getToken(DfColor.SQL)));
+        rules.add(new SingleLineRule("\"","\"",getToken(DfColor.VALIABLE)));
 
-		CombinedWordRule wordRule = new CombinedWordRule();
-		CombinedWordRule.WordMatcher mapMacher = new CombinedWordRule.WordMatcher();
-		mapMacher.addWord("map:", getToken(DfColor.MAP_MARK));
-		wordRule.addWordMatcher(mapMacher);
-		CombinedWordRule.WordMatcher listMacher = new CombinedWordRule.WordMatcher();
-		listMacher.addWord("list:", getToken(DfColor.MAP_MARK));
-		wordRule.addWordMatcher(listMacher);
+        CombinedWordRule wordRule = new CombinedWordRule();
+        CombinedWordRule.WordMatcher mapMacher = new CombinedWordRule.WordMatcher();
+        mapMacher.addWord("map:", getToken(DfColor.FIXED_LITERAL_MARK));
+        wordRule.addWordMatcher(mapMacher);
+        CombinedWordRule.WordMatcher listMacher = new CombinedWordRule.WordMatcher();
+        listMacher.addWord("list:", getToken(DfColor.FIXED_LITERAL_MARK));
+        wordRule.addWordMatcher(listMacher);
 
-		CombinedWordRule.WordMatcher suffixMacher = new CombinedWordRule.WordMatcher();
-		suffixMacher.addWord("suffix:", getToken(DfColor.LIKE_SEARCH_MARK));
-		wordRule.addWordMatcher(suffixMacher);
-		CombinedWordRule.WordMatcher prefixMacher = new CombinedWordRule.WordMatcher();
-		prefixMacher.addWord("prefix:", getToken(DfColor.LIKE_SEARCH_MARK));
-		wordRule.addWordMatcher(prefixMacher);
-		CombinedWordRule.WordMatcher containMacher = new CombinedWordRule.WordMatcher();
-		containMacher.addWord("contain:", getToken(DfColor.LIKE_SEARCH_MARK));
-		wordRule.addWordMatcher(containMacher);
+        CombinedWordRule.WordMatcher trueMacher = new CombinedWordRule.WordMatcher();
+        listMacher.addWord("true", getToken(DfColor.FIXED_LITERAL_MARK));
+        wordRule.addWordMatcher(trueMacher);
+        CombinedWordRule.WordMatcher falseMacher = new CombinedWordRule.WordMatcher();
+        listMacher.addWord("false", getToken(DfColor.FIXED_LITERAL_MARK));
+        wordRule.addWordMatcher(falseMacher);
 
-		rules.add(wordRule);
+        CombinedWordRule.WordMatcher suffixMacher = new CombinedWordRule.WordMatcher();
+        suffixMacher.addWord("suffix:", getToken(DfColor.LIKE_SEARCH_MARK));
+        wordRule.addWordMatcher(suffixMacher);
+        CombinedWordRule.WordMatcher prefixMacher = new CombinedWordRule.WordMatcher();
+        prefixMacher.addWord("prefix:", getToken(DfColor.LIKE_SEARCH_MARK));
+        wordRule.addWordMatcher(prefixMacher);
+        CombinedWordRule.WordMatcher containMacher = new CombinedWordRule.WordMatcher();
+        containMacher.addWord("contain:", getToken(DfColor.LIKE_SEARCH_MARK));
+        wordRule.addWordMatcher(containMacher);
 
-		return rules;
-	}
+        rules.add(wordRule);
+
+        return rules;
+    }
 
 }
