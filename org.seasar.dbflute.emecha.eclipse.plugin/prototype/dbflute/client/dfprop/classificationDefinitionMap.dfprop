@@ -6,7 +6,7 @@
 # Specification:
 # map: {
 #     [classification-name] = list:{
-#         ; map:{topComment=[comment]; dataType=[String or Number or Boolean]}
+#         ; map:{topComment=[comment]; dataType=[String or Number]}
 #         ; map:{code=[code]; name=[name]; alias=[alias]; comment=[comment]}
 #         ; map:{
 #             ; table=[table-name]
