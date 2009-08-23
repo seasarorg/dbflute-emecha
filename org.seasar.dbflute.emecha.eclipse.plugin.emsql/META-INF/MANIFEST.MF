@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: EMecha EMSql
+Bundle-SymbolicName: org.seasar.dbflute.emecha.eclipse.plugin.emsql;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Activator: org.seasar.dbflute.emecha.eclipse.plugin.emsql.EMSqlPlugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.ui,
+ org.eclipse.ui.ide
+Eclipse-LazyStart: true
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-ActivationPolicy: lazy

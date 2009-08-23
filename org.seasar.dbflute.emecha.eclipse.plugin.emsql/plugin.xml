@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+         <objectContribution
+               adaptable="true"
+               id="org.seasar.dbflute.emecha.eclipse.plugin.emsql.java.objectContribution"
+               nameFilter="*.java"
+               objectClass="org.eclipse.core.resources.IFile">
+               <menu
+                     id="org.seasar.dbflute.emecha.eclipse.plugin.menu"
+                     label="EMecha"
+                     path="additions">
+                     <groupMarker name="additions"/>
+                     <groupMarker name="additions2"/>
+               </menu>
+               <visibility>
+                   <and>
+                       <objectState
+                             name="projectNature"
+                             value="org.eclipse.jdt.core.javanature">
+                       </objectState>
+                       <or>
+                           <objectState
+                                 name="path"
+                                 value="*/exbhv/*">
+                           </objectState>
+                           <objectState
+                                 name="name"
+                                 value="*Dao.java">
+                           </objectState>
+                       </or>
+                   </and>
+               </visibility>
+               <action
+                     class="org.seasar.dbflute.emecha.eclipse.plugin.emsql.action.NewOutSideSqlWizardAction"
+                     id="org.seasar.dbflute.emecha.eclipse.plugin.emsql.NewOutSideSql"
+                     menubarPath="org.seasar.dbflute.emecha.eclipse.plugin.menu/additions2"
+                     enablesFor="1"
+                     label="New Outside Sql">
+               </action>
+         </objectContribution>
+   </extension>
+</plugin>
