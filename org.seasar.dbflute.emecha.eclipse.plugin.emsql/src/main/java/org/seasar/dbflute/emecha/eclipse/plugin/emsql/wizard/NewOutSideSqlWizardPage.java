@@ -21,10 +21,17 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.ui.wizards.NewTypeWizardPage;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.seasar.dbflute.emecha.eclipse.plugin.core.util.LogUtil;
 import org.seasar.dbflute.emecha.eclipse.plugin.emsql.EMSqlPlugin;
 
@@ -38,10 +45,35 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     private static final String PAGE_NAME = "NewOutSideSqlPage";
     private IStructuredSelection _selection;
     private boolean initialized = false;
-    private boolean useEntity = true;
-    private boolean useParamBean = true;
+    private boolean useEntity = false;
+    private boolean useParamBean = false;
     private boolean usePaging = false;
     private String lineSeparator = "\n";
+
+    protected class DfUseEntityListener implements SelectionListener {
+        public void widgetDefaultSelected(SelectionEvent e) {
+//            ((Button)e.getSource()).setSelection(useEntity);
+        }
+        public void widgetSelected(SelectionEvent e) {
+            useEntity = ((Button)e.getSource()).getSelection();
+        }
+    }
+    protected class DfUsePMDListener implements SelectionListener {
+        public void widgetDefaultSelected(SelectionEvent e) {
+//            ((Button)e.getSource()).setSelection(useParamBean);
+        }
+        public void widgetSelected(SelectionEvent e) {
+            useParamBean = ((Button)e.getSource()).getSelection();
+        }
+    }
+    protected class DfUsePagingListener implements SelectionListener {
+        public void widgetDefaultSelected(SelectionEvent e) {
+//            ((Button)e.getSource()).setSelection(usePaging);
+        }
+        public void widgetSelected(SelectionEvent e) {
+            usePaging = ((Button)e.getSource()).getSelection();
+        }
+    }
     /**
      * @return lineSeparator
      */
@@ -80,11 +112,13 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         composite.setLayout(layout);
 
         // pick & choose the wanted UI components
-
         createContainerControls(composite, nColumns);
         createPackageControls(composite, nColumns);
         createSuperClassControls(composite, nColumns);
         createTypeNameControls(composite, nColumns);
+
+        // DBFlute Option
+        createDBFluteControls(composite);
 
         IJavaElement javaElement = getInitialJavaElement(_selection);
         // Initial Behavior Package Setting
@@ -111,6 +145,120 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         initialized = true;
     }
 
+//    /**
+//     * グルーピング
+//     * @param parent
+//     * @param label
+//     * @return
+//     * @deprecated
+//     */
+//    protected Composite createSubsection(Composite parent, String label) {
+//        Group group= new Group(parent, SWT.SHADOW_NONE);
+//        group.setText(label);
+//        GridData data= new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
+//        data.horizontalSpan = 4;
+//        group.setLayoutData(data);
+//        GridLayout layout= new GridLayout();
+//        layout.numColumns= 4;
+//        group.setLayout(layout);
+//
+//        return group;
+//
+//    }
+    /**
+     * Option Separator.
+     * @param parent
+     * @param label
+     */
+    protected void createOptionSeparator(Composite parent, String label) {
+        Label label2 = new Label(parent,SWT.NONE);
+        label2.setText(label);
+        label2.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, false, false, 1, 1));
+        createSeparator(parent, 3);
+
+    }
+
+    /**
+     * DBFlute Options
+     * @param composite
+     */
+    protected void createDBFluteControls(Composite composite) {
+        // TODO 自動生成されたメソッド・スタブ
+//        Button customizeEntityCheck = new Button(composite,SWT.CHECK);
+//        customizeEntityCheck.setText("Use CustomizeEntity.");
+//
+//        Button parambeanCheck = new Button(composite,SWT.CHECK);
+//        parambeanCheck.setText("Use ParameterBean.");
+//        createSeparator(composite, 4);
+//        Composite subsection = createSubsection(composite, "DBFlute Options");
+        createOptionSeparator(composite, "DBFlute Options");
+
+        createSimpleCheckBox(composite, "Use Customize Entity.", 0, new DfUseEntityListener(), useEntity);
+        Button pmd = createSimpleCheckBox(composite, "Use Parameter Bean.", 0, new DfUsePMDListener(), useParamBean);
+        Button paging = createSimpleCheckBox(composite, "Use Paging.", 20, new DfUsePagingListener(), usePaging);
+        createSelectionDependency(pmd, paging);
+    }
+
+    protected Button createSimpleCheckBox(Composite composite, String label, int indent, SelectionListener listener, boolean defaultCheck) {
+        createEmptySpace(composite, 1);
+        GridData gd= new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+        gd.horizontalSpan= 3;
+        gd.horizontalIndent= indent;
+
+        Button checkBox= new Button(composite, SWT.CHECK);
+        checkBox.setFont(JFaceResources.getDialogFont());
+        checkBox.setText(label);
+        checkBox.setLayoutData(gd);
+        if (listener != null) {
+            checkBox.addSelectionListener(listener);
+        }
+
+        checkBox.setSelection(defaultCheck);
+
+        return checkBox;
+    }
+    /**
+     * Creates a spacer control with the given span.
+     * The composite is assumed to have <code>MGridLayout</code> as
+     * layout.
+     * @param parent The parent composite
+     */
+    public Control createEmptySpace(Composite parent, int span) {
+        Label label= new Label(parent, SWT.LEFT);
+        GridData gd= new GridData();
+        gd.horizontalAlignment= GridData.BEGINNING;
+        gd.grabExcessHorizontalSpace= false;
+        gd.horizontalSpan= span;
+        gd.horizontalIndent= 0;
+        gd.widthHint= 0;
+        gd.heightHint= 0;
+        label.setLayoutData(gd);
+        return label;
+    }
+    /**
+     * Creates a selection dependency between a master and a slave control.
+     *
+     * @param master
+     *                   The master button that controls the state of the slave
+     * @param slave
+     *                   The slave control that is enabled only if the master is
+     *                   selected
+     */
+    protected void createSelectionDependency(final Button master, final Control slave) {
+
+        master.addSelectionListener(new SelectionListener() {
+
+            public void widgetDefaultSelected(SelectionEvent event) {
+                // Do nothing
+            }
+
+            public void widgetSelected(SelectionEvent event) {
+                slave.setEnabled(master.getSelection());
+            }
+        });
+        slave.setEnabled(master.getSelection());
+    }
+
     /**
      * Initialize.
      */
@@ -121,10 +269,8 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     }
 
     /**
-     * Returns the label that is used for the super class input field.
-     *
-     * @return the label that is used for the super class input field.
-     * @since 3.2
+     * Target Class Name Label.
+     * {@inheritDoc}
      */
     @Override
     protected String getSuperClassLabel() {
@@ -132,10 +278,8 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     }
 
     /**
-     * Returns the label that is used for the type name input field.
-     *
-     * @return the label that is used for the type name input field.
-     * @since 3.2
+     * File Name Label.
+     * {@inheritDoc}
      */
     @Override
     protected String getTypeNameLabel() {
@@ -143,13 +287,8 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     }
 
     /**
-     * Hook method that gets called when the type name has changed. The method validates the
-     * type name and returns the status of the validation.
-     * <p>
-     * Subclasses may extend this method to perform their own validation.
-     * </p>
-     *
-     * @return the status of the validation
+     * SQL name changed event validate.
+     * {@inheritDoc}
      */
     @Override
     protected IStatus typeNameChanged() {
