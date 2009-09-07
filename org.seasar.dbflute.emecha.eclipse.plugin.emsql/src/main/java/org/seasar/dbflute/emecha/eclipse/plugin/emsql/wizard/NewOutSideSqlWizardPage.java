@@ -408,7 +408,13 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         if ( useParamBean ) {
             if ( usePaging ) {
                 str.append("-- !df:pmb extends SPB!");
-                str.append(getLineSeparator());
+            } else {
+                str.append("-- !df:pmb!");
+            }
+            str.append(getLineSeparator());
+            str.append(getParamBeanColumnsString());
+            str.append(getLineSeparator());
+            if ( usePaging ) {
                 str.append(getLineSeparator());
                 str.append("/*IF pmb.isPaging()*/");
                 str.append(getLineSeparator());
@@ -416,12 +422,18 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
                 str.append("-- ELSE select count(*)");
                 str.append(getLineSeparator());
                 str.append("/*END*/");
-            } else {
-                str.append("-- !df:pmb!");
             }
             str.append(getLineSeparator());
         }
         return new ByteArrayInputStream(str.toString().getBytes());
+    }
+
+    /**
+     * ParameterBeanで利用する項目のSQLファイル出力時文字列を取得する。
+     * @return
+     */
+    private String getParamBeanColumnsString() {
+        return "-- !!String sample!!";
     }
 
     public String getSQLFileExtension() {
