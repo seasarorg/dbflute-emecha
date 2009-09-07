@@ -48,19 +48,25 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     private boolean useEntity = false;
     private boolean useParamBean = false;
     private boolean usePaging = false;
+    private boolean useCursor = false;
     private String lineSeparator = "\n";
 
     protected class DfUseEntityListener implements SelectionListener {
         public void widgetDefaultSelected(SelectionEvent e) {
-//            ((Button)e.getSource()).setSelection(useEntity);
         }
         public void widgetSelected(SelectionEvent e) {
             useEntity = ((Button)e.getSource()).getSelection();
         }
     }
+    protected class DfUseCursorListener implements SelectionListener {
+        public void widgetDefaultSelected(SelectionEvent e) {
+        }
+        public void widgetSelected(SelectionEvent e) {
+            useCursor = ((Button)e.getSource()).getSelection();
+        }
+    }
     protected class DfUsePMDListener implements SelectionListener {
         public void widgetDefaultSelected(SelectionEvent e) {
-//            ((Button)e.getSource()).setSelection(useParamBean);
         }
         public void widgetSelected(SelectionEvent e) {
             useParamBean = ((Button)e.getSource()).getSelection();
@@ -68,7 +74,6 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     }
     protected class DfUsePagingListener implements SelectionListener {
         public void widgetDefaultSelected(SelectionEvent e) {
-//            ((Button)e.getSource()).setSelection(usePaging);
         }
         public void widgetSelected(SelectionEvent e) {
             usePaging = ((Button)e.getSource()).getSelection();
@@ -93,7 +98,6 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
      */
     public NewOutSideSqlWizardPage() {
         super(false,PAGE_NAME);
-        setPageComplete(false);
     }
 
     /**
@@ -193,7 +197,9 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
 //        Composite subsection = createSubsection(composite, "DBFlute Options");
         createOptionSeparator(composite, "DBFlute Options");
 
-        createSimpleCheckBox(composite, "Use Customize Entity.", 0, new DfUseEntityListener(), useEntity);
+        Button ce = createSimpleCheckBox(composite, "Use Customize Entity.", 0, new DfUseEntityListener(), useEntity);
+        Button cursor = createSimpleCheckBox(composite, "Use Cursor.", 20, new DfUseCursorListener(), useCursor);
+        createSelectionDependency(ce, cursor);
         Button pmd = createSimpleCheckBox(composite, "Use Parameter Bean.", 0, new DfUsePMDListener(), useParamBean);
         Button paging = createSimpleCheckBox(composite, "Use Paging.", 20, new DfUsePagingListener(), usePaging);
         createSelectionDependency(pmd, paging);
@@ -266,6 +272,7 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         this._selection = selection;
         IJavaElement javaElement = getInitialJavaElement(selection);
         initContainerPage(javaElement);
+        setPageComplete(false);
     }
 
     /**
@@ -392,11 +399,23 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         if ( useEntity ) {
             str.append("-- #df:entity#");
             str.append(getLineSeparator());
+            if ( useCursor ) {
+                str.append("-- +cursor+");
+                str.append(getLineSeparator());
+            }
             str.append(getLineSeparator());
         }
         if ( useParamBean ) {
             if ( usePaging ) {
                 str.append("-- !df:pmb extends SPB!");
+                str.append(getLineSeparator());
+                str.append(getLineSeparator());
+                str.append("/*IF pmb.isPaging()*/");
+                str.append(getLineSeparator());
+                str.append(getLineSeparator());
+                str.append("-- ELSE select count(*)");
+                str.append(getLineSeparator());
+                str.append("/*END*/");
             } else {
                 str.append("-- !df:pmb!");
             }

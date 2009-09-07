@@ -131,11 +131,11 @@ public class NewOutSideSqlWizard extends Wizard implements INewWizard {
         // TODO 自動生成されたメソッド・スタブ
 //        this._workbench = workbench;
         this._selection = selection;
-        Object obj = _selection.getFirstElement();
-        if (obj instanceof IFile) {
-            IFile file = (IFile) obj;
-            init(file);
-        }
+//        Object obj = _selection.getFirstElement();
+//        if (obj instanceof IFile) {
+//            IFile file = (IFile) obj;
+//            init(file);
+//        }
     }
 
     /**
@@ -166,6 +166,18 @@ public class NewOutSideSqlWizard extends Wizard implements INewWizard {
         addPage(mainPage);
         mainPage.init(_selection);
 
+    }
+
+    /* (非 Javadoc)
+     * @see org.eclipse.jface.wizard.Wizard#canFinish()
+     */
+    @Override
+    public boolean canFinish() {
+        String typeName = mainPage.getTypeName();
+        if (typeName == null || typeName.trim().length() == 0) {
+            return false;
+        }
+        return super.canFinish();
     }
 
 }
