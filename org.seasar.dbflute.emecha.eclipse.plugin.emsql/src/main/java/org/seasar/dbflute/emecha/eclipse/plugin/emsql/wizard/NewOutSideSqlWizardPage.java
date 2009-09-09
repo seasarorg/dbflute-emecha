@@ -42,6 +42,7 @@ import org.seasar.dbflute.emecha.eclipse.plugin.emsql.EMSqlPlugin;
 public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
 
 
+    private static final String FILE_NAME_VALIDATE = "^[a-zA-Z0-9_]+$";
     private static final String PAGE_NAME = "NewOutSideSqlPage";
     private IStructuredSelection _selection;
     private boolean initialized = false;
@@ -312,7 +313,7 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
             setPageComplete(false);
             return new Status(IStatus.ERROR, EMSqlPlugin.PLUGIN_ID, "SQL Name is empty.");
         }
-        if ( !typeName.matches("^[a-zA-Z0-9]+$")) {
+        if ( !validateSqlFileName(typeName)) {
             setErrorMessage("SQL Name is missing.");
             setPageComplete(false);
             return new Status(IStatus.ERROR, EMSqlPlugin.PLUGIN_ID, "SQL Name is missing.");
@@ -329,6 +330,27 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         }
         setPageComplete(true);
         return status;
+    }
+
+    /**
+     * SQL Name Check.
+     * @param typeName
+     * @return
+     */
+    private boolean validateSqlFileName(String typeName) {
+        if (!typeName.matches(FILE_NAME_VALIDATE)) {
+            return false;
+        }
+        if ( typeName.startsWith("_") ) {
+            return false;
+        }
+        if ( typeName.endsWith("_") ) {
+            return false;
+        }
+        if ( typeName.indexOf("__") >= 0 ) {
+            return false;
+        }
+        return true;
     }
 
     /**
