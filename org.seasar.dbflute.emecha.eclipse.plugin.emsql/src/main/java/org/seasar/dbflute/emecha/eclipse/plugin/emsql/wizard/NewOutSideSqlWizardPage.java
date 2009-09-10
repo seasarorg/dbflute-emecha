@@ -32,7 +32,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.seasar.dbflute.emecha.eclipse.plugin.core.util.LogUtil;
 import org.seasar.dbflute.emecha.eclipse.plugin.emsql.EMSqlPlugin;
 
 /**
@@ -41,7 +40,7 @@ import org.seasar.dbflute.emecha.eclipse.plugin.emsql.EMSqlPlugin;
  */
 public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
 
-
+    /** ファイル名の規則 */
     private static final String FILE_NAME_VALIDATE = "^[a-zA-Z0-9_]+$";
     private static final String PAGE_NAME = "NewOutSideSqlPage";
     private IStructuredSelection _selection;
@@ -150,26 +149,6 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         initialized = true;
     }
 
-//    /**
-//     * グルーピング
-//     * @param parent
-//     * @param label
-//     * @return
-//     * @deprecated
-//     */
-//    protected Composite createSubsection(Composite parent, String label) {
-//        Group group= new Group(parent, SWT.SHADOW_NONE);
-//        group.setText(label);
-//        GridData data= new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
-//        data.horizontalSpan = 4;
-//        group.setLayoutData(data);
-//        GridLayout layout= new GridLayout();
-//        layout.numColumns= 4;
-//        group.setLayout(layout);
-//
-//        return group;
-//
-//    }
     /**
      * Option Separator.
      * @param parent
@@ -188,14 +167,6 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
      * @param composite
      */
     protected void createDBFluteControls(Composite composite) {
-        // TODO 自動生成されたメソッド・スタブ
-//        Button customizeEntityCheck = new Button(composite,SWT.CHECK);
-//        customizeEntityCheck.setText("Use CustomizeEntity.");
-//
-//        Button parambeanCheck = new Button(composite,SWT.CHECK);
-//        parambeanCheck.setText("Use ParameterBean.");
-//        createSeparator(composite, 4);
-//        Composite subsection = createSubsection(composite, "DBFlute Options");
         createOptionSeparator(composite, "DBFlute Options");
 
         Button ce = createSimpleCheckBox(composite, "Use Customize Entity.", 0, new DfUseEntityListener(), useEntity);
@@ -245,11 +216,8 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     /**
      * Creates a selection dependency between a master and a slave control.
      *
-     * @param master
-     *                   The master button that controls the state of the slave
-     * @param slave
-     *                   The slave control that is enabled only if the master is
-     *                   selected
+     * @param master The master button that controls the state of the slave
+     * @param slave The slave control that is enabled only if the master is selected
      */
     protected void createSelectionDependency(final Button master, final Control slave) {
 
@@ -282,7 +250,7 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
      */
     @Override
     protected String getSuperClassLabel() {
-        return "Behavior";
+        return "Behavior"; //$NON-NLS-1$
     }
 
     /**
@@ -291,7 +259,7 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
      */
     @Override
     protected String getTypeNameLabel() {
-        return "SQL Name";
+        return "SQL Name"; //$NON-NLS-1$
     }
 
     /**
@@ -307,7 +275,6 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         }
         IStatus status = super.typeNameChanged();
         String typeName = getTypeName();
-        LogUtil.log(EMSqlPlugin.getDefault(), "CheckName:" + typeName);
         if ( typeName == null || typeName.trim().length() == 0 ) {
             setErrorMessage("SQL Name is empty.");
             setPageComplete(false);
@@ -319,10 +286,8 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
             return new Status(IStatus.ERROR, EMSqlPlugin.PLUGIN_ID, "SQL Name is missing.");
         }
 
-        // TODO File exists check!!
         IPath path = getFileFullPath();
         IFile file = getWorkspaceRoot().getFile(path);
-        LogUtil.log(EMSqlPlugin.getDefault(), "TargetFile:" + file.getFullPath().toString());
         if ( file.exists() ) {
             setErrorMessage("SQL Name already exists.");
             setPageComplete(false);
@@ -383,7 +348,6 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
      * Create SQL file.
      */
     public IFile createSQLFile(IProgressMonitor monitor) throws CoreException, InterruptedException {
-        // TODO Create File with directories.
         if (monitor == null) {
             monitor = new NullProgressMonitor();
         }

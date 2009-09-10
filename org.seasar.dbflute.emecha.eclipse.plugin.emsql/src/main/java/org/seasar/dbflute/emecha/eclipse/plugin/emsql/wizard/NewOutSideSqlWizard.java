@@ -30,10 +30,6 @@ import org.seasar.dbflute.emecha.eclipse.plugin.emsql.EMSqlPlugin;
  */
 public class NewOutSideSqlWizard extends Wizard implements INewWizard {
 
-//    private IFile _resource;
-//    private IProject _project;
-//    private IJavaProject _javaProject;
-//    private IWorkbench _workbench;
     private IStructuredSelection _selection;
 
     private NewOutSideSqlWizardPage mainPage;
@@ -85,8 +81,6 @@ public class NewOutSideSqlWizard extends Wizard implements INewWizard {
                             }
                         }
                     } catch (PartInitException e) {
-//                        DialogUtil.openError(dw.getShell(), ResourceMessages.FileResource_errorMessage,
-//                                e.getMessage(), e);
                         LogUtil.log(EMSqlPlugin.getDefault(),e);
                     }
 
@@ -96,7 +90,6 @@ public class NewOutSideSqlWizard extends Wizard implements INewWizard {
         } catch (Exception e) {
             LogUtil.log(EMSqlPlugin.getDefault(), e);
         }
-
         return false;
     }
 
@@ -128,14 +121,7 @@ public class NewOutSideSqlWizard extends Wizard implements INewWizard {
      * @param selection2
      */
     public void init(IWorkbench workbench, IStructuredSelection selection) {
-        // TODO 自動生成されたメソッド・スタブ
-//        this._workbench = workbench;
         this._selection = selection;
-//        Object obj = _selection.getFirstElement();
-//        if (obj instanceof IFile) {
-//            IFile file = (IFile) obj;
-//            init(file);
-//        }
     }
 
     /**
@@ -143,14 +129,6 @@ public class NewOutSideSqlWizard extends Wizard implements INewWizard {
      * @param file
      */
     public void init(IFile file) {
-        // TODO 自動生成されたメソッド・スタブ
-//        _project = file.getProject();
-//        IJavaProject javap = JavaCore.create(prj);
-//        if (javap.exists() && javap.isOpen()) {
-//            this._resource = file;
-//            this._project = javap;
-//        }
-
     }
 
     /**
@@ -159,7 +137,6 @@ public class NewOutSideSqlWizard extends Wizard implements INewWizard {
      */
     @Override
     public void addPages() {
-        // TODO 自動生成されたメソッド・スタブ
         mainPage = new NewOutSideSqlWizardPage();
         mainPage.setTitle("CreateNewOutSideSql");
         mainPage.setDescription("Create new OutSideSql file.");
@@ -168,7 +145,8 @@ public class NewOutSideSqlWizard extends Wizard implements INewWizard {
 
     }
 
-    /* (非 Javadoc)
+    /**
+     * {@inheritDoc}
      * @see org.eclipse.jface.wizard.Wizard#canFinish()
      */
     @Override
