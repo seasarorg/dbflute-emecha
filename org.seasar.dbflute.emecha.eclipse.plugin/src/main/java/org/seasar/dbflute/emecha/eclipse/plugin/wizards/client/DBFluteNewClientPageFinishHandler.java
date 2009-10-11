@@ -108,11 +108,11 @@ public class DBFluteNewClientPageFinishHandler {
                 return;
             }
         }
-        
+
         refreshResources(monitor);
         monitor.worked(1);
     }
-    
+
     protected void refreshResources(IProgressMonitor monitor) {
         if (topLevelResource != null) {
             try {
@@ -179,7 +179,7 @@ public class DBFluteNewClientPageFinishHandler {
     }
 
     protected String buildBuildPropertiesName(DBFluteNewClientPageResult result) {
-        return "build-" + result.getProject() + ".properties";
+        return "build.properties";
     }
 
     // ===================================================================================
