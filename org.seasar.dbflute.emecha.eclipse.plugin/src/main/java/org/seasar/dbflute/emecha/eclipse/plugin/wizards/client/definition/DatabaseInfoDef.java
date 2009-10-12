@@ -17,14 +17,6 @@ public class DatabaseInfoDef {
     static {
         DatabaseInfoDef o = null;
         {
-            o = info("h2", "org.h2.Driver", "jdbc:h2:file:xxx");
-            TARGET_DATABASE_INFO_LIST.add(o);
-        }
-        {
-            o = info("derby", "org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:xxx;create=true");
-            TARGET_DATABASE_INFO_LIST.add(o);
-        }
-        {
             o = info("mysql", "com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/xxx");
             TARGET_DATABASE_INFO_LIST.add(o);
         }
@@ -47,6 +39,14 @@ public class DatabaseInfoDef {
         {
             o = info("mssql", "com.microsoft.sqlserver.jdbc.SQLServerDriver",
                     "jdbc:sqlserver://localhost:1433;DatabaseName=xxx;");
+            TARGET_DATABASE_INFO_LIST.add(o);
+        }
+        {
+            o = info("h2", "org.h2.Driver", "jdbc:h2:file:xxx");
+            TARGET_DATABASE_INFO_LIST.add(o);
+        }
+        {
+            o = info("derby", "org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:xxx;create=true");
             TARGET_DATABASE_INFO_LIST.add(o);
         }
     }
