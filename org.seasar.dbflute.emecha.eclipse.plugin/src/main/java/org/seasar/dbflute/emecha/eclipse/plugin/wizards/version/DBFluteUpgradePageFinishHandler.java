@@ -109,7 +109,7 @@ public class DBFluteUpgradePageFinishHandler {
             projectList.add(property.trim());
         }
         if (projectList.isEmpty()) {
-            String msg = "The project information was NOT found:";
+            String msg = "The project name was NOT found:";
             msg = msg + " buildPropertyList=" + buildPropertyList;
             throw new IllegalStateException(msg);
         }
