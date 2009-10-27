@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -71,14 +72,23 @@ public class DBFluteUpgradePageFinishHandler {
         for (File dbfluteDir : dbfluteDirs) {
             File[] listFiles = dbfluteDir.listFiles(new FileFilter() {
                 public boolean accept(File file) {
+                    if (!file.isFile()) {
+                        return false;
+                    }
                     String name = file.getName();
-                    return file.isFile() && name.startsWith("build-") && name.endsWith(".properties");
+                    return name.startsWith("build") && name.endsWith(".properties");
                 }
             });
             if (listFiles != null && listFiles.length > 0) {
                 buildPropertyList.add(listFiles[0]);
             }
         }
+        if (buildPropertyList.isEmpty()) {
+            String msg = "The build.properties was NOT found:";
+            msg = msg + " dbfluteDirs=" + Arrays.asList(dbfluteDirs);
+            throw new IllegalStateException(msg);
+        }
+
         List<String> projectList = new ArrayList<String>();
         for (File buildProperty : buildPropertyList) {
             Properties properties = new Properties();
@@ -91,7 +101,7 @@ public class DBFluteUpgradePageFinishHandler {
             }
             String property = properties.getProperty("torque.project");
             if (property == null) {
-                String msg = "The property 'torque.project' was not found:";
+                String msg = "The property 'torque.project' was NOT found:";
                 msg = msg + " buildProperty=" + buildProperty;
                 msg = msg + " properties=" + properties;
                 throw new IllegalStateException(msg);
@@ -99,9 +109,12 @@ public class DBFluteUpgradePageFinishHandler {
             projectList.add(property.trim());
         }
         if (projectList.isEmpty()) {
-            String msg = "The projectList should not be null: buildPropertyList=" + buildPropertyList;
+            String msg = "The project information was NOT found:";
+            msg = msg + " buildPropertyList=" + buildPropertyList;
             throw new IllegalStateException(msg);
         }
+        final String projectBat = "_project.bat";
+        final String projectSh = "_project.sh";
         for (String project : projectList) {
             versionUpPageResult.setProject(project);
 
@@ -110,7 +123,7 @@ public class DBFluteUpgradePageFinishHandler {
             for (URL url : entryList) {
                 final String path = buildOutputPath(url.getPath());
 
-                if (!url.getFile().contains("_project.bat") && !url.getFile().contains("_project.sh")) {
+                if (!url.getFile().contains(projectBat) && !url.getFile().contains(projectSh)) {
                     continue;
                 }
 
