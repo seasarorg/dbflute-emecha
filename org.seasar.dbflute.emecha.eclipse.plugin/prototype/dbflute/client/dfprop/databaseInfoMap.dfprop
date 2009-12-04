@@ -78,7 +78,7 @@ map:{
         #    o objectTypeTargetList: (NotRequired - Default 'map:{TABLE;VIEW}')
         #    o tableExceptList: (NotRequired - Default 'list:{}')
         #    o tableTargetList: (NotRequired - Default 'list:{}')
-        #    o isSuppressCommonColumn: (NotRequired - Default 'false')
+        #    o isSuppressCommonColumn: (NotRequired - Default false)
         #
         #; additionalSchemaMap = map:{
         #    ; NEXTEXAMPLEDB = map:{
