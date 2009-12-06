@@ -11,6 +11,7 @@
 # o isSuppressBatchUpdate: (NotRequired - Default false)
 # o isDropGenerateTableOnly: (NotRequired - Default false)
 # o filterVariablesMap: (NotRequired - Default 'map:{}')
+# o additionalUserMap: (NotRequired - Default 'map:{}')
 # o additionalDropMapList: (NotRequired - Default 'list:{}')
 # o isSuppressTruncateTable: (NotRequired - Default false)
 # o isSuppressDropForeignKey: (NotRequired - Default false)
@@ -28,6 +29,9 @@
 #     ; isSuppressBatchUpdate = false
 #     ; isDropGenerateTableOnly = false
 #     ; filterVariablesMap = map:{abc=AAA}
+#     ; additionalUserMap = map:{
+#         ; system = map:{user=system ; password=system}
+#     }
 #     ; additionalDropMapList = list:{
 #         ; map:{
 #             ; schema = NEXTEXAMPLEDB
@@ -37,9 +41,11 @@
 #             ; isDropAllTable = false
 #         }
 #     }
-#     ; isSuppressTruncateTable = true
-#     ; isSuppressDropForeignKey = true
-#     ; isSuppressDropTable = true
+#     ; isSuppressTruncateTable = false
+#     ; isSuppressDropForeignKey = false
+#     ; isSuppressDropTable = false
+#     ; isSuppressDropSequence = false
+#     ; isSuppressDropDBLink = false
 # }
 #
 # *The line that starts with '#' means comment-out.
@@ -109,14 +115,32 @@ map:{
     # - - - - - - - - - -/
 
     # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # o additionalUserMap: (NotRequired - Default 'map:{}')
+    #  You can set additional users.
+    #  Elements of this map are as below:
+    #   o key of map: User Definition Name (userDefName)
+    #   o url: (NotRequired - Default same as one of main schema)
+    #   o user: (Required)
+    #   o password: (NotRequired - Default '')
+    #
+    #; additionalUserMap = map:{
+    #    ; system = map:{
+    #        #; url = ...
+    #        ; user = system
+    #        ; password = system
+    #    }
+    #}
+    # - - - - - - - - - -/
+
+    # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # o additionalDropMapList: (NotRequired - Default 'list:{}')
     #  You can drop additional other schemas.
     #  Elements of this map are as below:
     #   o schema: (Required)
-    #   o objectTypeTargetList:: (NotRequired - Default 'list{TABLE;VIEW}')
-    #   o tableExceptList:: (NotRequired - Default 'list{}')
-    #   o tableTargetList:: (NotRequired - Default 'list{}')
-    #   o isDropAllTable:: (NotRequired - Default false)
+    #   o objectTypeTargetList: (NotRequired - Default 'list{TABLE;VIEW}')
+    #   o tableExceptList: (NotRequired - Default 'list{}')
+    #   o tableTargetList: (NotRequired - Default 'list{}')
+    #   o isDropAllTable: (NotRequired - Default false)
     #
     #; additionalDropMapList = list:{
     #    ; map:{
