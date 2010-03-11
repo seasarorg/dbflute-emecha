@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.seasar.dbflute.emecha.eclipse.plugin.emsql.EMSqlPlugin;
 
 /**
@@ -49,8 +50,18 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     private boolean useParamBean = false;
     private boolean usePaging = false;
     private boolean useCursor = false;
-    private String lineSeparator = "\n";
+    private String lineSeparator = System.getProperty("line.separator","\n");
+    private boolean useComment = true;
+    private Text sqlComment = null;
 
+    protected class DfUseCommentListener implements SelectionListener {
+        public void widgetDefaultSelected(SelectionEvent e) {
+            ((Button)e.getSource()).setSelection(useComment);
+        }
+        public void widgetSelected(SelectionEvent e) {
+            useComment = ((Button)e.getSource()).getSelection();
+        }
+    }
     protected class DfUseEntityListener implements SelectionListener {
         public void widgetDefaultSelected(SelectionEvent e) {
         }
@@ -168,7 +179,9 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
      */
     protected void createDBFluteControls(Composite composite) {
         createOptionSeparator(composite, "DBFlute Options");
-
+        Button cmt = createSimpleCheckBox(composite, "Use SQL Title and Description Comment.", 0, new DfUseCommentListener(), useComment);
+        Text cmtTxt = createSQLTitleCommentTextBox(composite, 20);
+        createSelectionDependency(cmt, cmtTxt);
         Button ce = createSimpleCheckBox(composite, "Use Customize Entity.", 0, new DfUseEntityListener(), useEntity);
         Button cursor = createSimpleCheckBox(composite, "Use Cursor.", 20, new DfUseCursorListener(), useCursor);
         createSelectionDependency(ce, cursor);
@@ -194,6 +207,19 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         checkBox.setSelection(defaultCheck);
 
         return checkBox;
+    }
+    protected Text createSQLTitleCommentTextBox(Composite composite, int indent) {
+        createEmptySpace(composite, 1);
+        GridData gd= new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+        gd.horizontalSpan= 3;
+        gd.horizontalIndent= indent;
+
+        sqlComment= new Text(composite, SWT.SINGLE | SWT.BORDER);
+        sqlComment.setFont(JFaceResources.getDialogFont());
+        sqlComment.setText("");
+        sqlComment.setLayoutData(gd);
+
+        return sqlComment;
     }
     /**
      * Creates a spacer control with the given span.
@@ -382,6 +408,23 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
      */
     private InputStream getInitialSource() {
         StringBuilder str = new StringBuilder();
+        if ( useComment  ) {
+            str.append("/*");
+            str.append(getLineSeparator());
+            str.append(" [df:title]");
+            str.append(getLineSeparator());
+            str.append(getTitleComment());
+            str.append(getLineSeparator());
+            str.append(getLineSeparator());
+            str.append(" [df:description]");
+            str.append(getLineSeparator());
+            str.append(getCommentDescription());
+            str.append(getLineSeparator());
+            str.append(getLineSeparator());
+            str.append("*/");
+            str.append(getLineSeparator());
+            str.append(getLineSeparator());
+        }
         if ( useEntity ) {
             str.append("-- #df:entity#");
             str.append(getLineSeparator());
@@ -412,6 +455,25 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
             str.append(getLineSeparator());
         }
         return new ByteArrayInputStream(str.toString().getBytes());
+    }
+
+    /**
+     * SQLの説明を取得する。
+     * @return
+     */
+    private String getCommentDescription() {
+        return "  SQL Description here.";
+    }
+
+    /**
+     * SQLのタイトルを取得する。
+     * @return
+     */
+    private String getTitleComment() {
+        if ( sqlComment == null || "".equals(sqlComment.getText().trim()))
+            return "  SQL title here.";
+        else
+            return "  " + sqlComment.getText();
     }
 
     /**
