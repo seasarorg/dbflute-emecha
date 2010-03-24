@@ -18,6 +18,7 @@
 # o projectPrefix: (NotRequired - Default '')
 # o classAuthor: (NotRequired - Default 'DBFlute(AutoGenerator)')
 # o sourceFileEncoding: (NotRequired - Default 'UTF-8')
+# o isClientBehavior: (NotRequired - Default false)
 # o flatDirectoryPackage (NotRequired - Default '') *CSharp Only
 # o omitDirectoryPackage (NotRequired - Default '') *CSharp Only
 # 
@@ -34,7 +35,7 @@ map:{
     # 
     ; database = ${database}
     # - - - - - - - - - -/
-    
+
     # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # o targetLanguage: (Required)
     #  The target language.
@@ -44,7 +45,7 @@ map:{
     # 
     ; targetLanguage = java
     # - - - - - - - - - -/
-    
+
     # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # o targetContainer: (Required)
     #  The target DI container.
@@ -171,13 +172,21 @@ map:{
     # - - - - - - - - - -/
 
     # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # o isClientBehavior: (NotRequired - Default false)
+    #  Does the Generate task generate only client behaviors?
+    #  (This is a property for the function of ClientBehavior)
+    #
+    #; isClientBehavior = false
+    # - - - - - - - - - -/
+
+    # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # o flatDirectoryPackage (NotRequired - Default '') *CSharp Only
     #  ex) Aaa.Bbb.DBFlute --> Directory: source/Aaa.Bbb.DBFlute/AllCommon
     # 
     # @CSharpOnly
     #; flatDirectoryPackage = Aaa.Bbb.DBFlute
     # - - - - - - - - - -/
-    
+
     # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # o omitDirectoryPackage (NotRequired - Default '') *CSharp Only
     #  ex) Aaa --> Directory: source/Bbb/DBFlute/AllCommon
