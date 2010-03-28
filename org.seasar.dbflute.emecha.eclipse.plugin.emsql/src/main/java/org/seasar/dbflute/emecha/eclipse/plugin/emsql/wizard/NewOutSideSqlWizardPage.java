@@ -5,6 +5,7 @@ package org.seasar.dbflute.emecha.eclipse.plugin.emsql.wizard;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -50,6 +51,8 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     private boolean useParamBean = false;
     private boolean usePaging = false;
     private boolean useCursor = false;
+    /** The output encoding of SQL file. (NotNull: default is same as DBFlute default) */
+    private String sqlFileEncoding = "UTF-8";
     private String lineSeparator = System.getProperty("line.separator","\n");
     private boolean useComment = true;
     private Text sqlComment = null;
@@ -454,7 +457,12 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
             }
             str.append(getLineSeparator());
         }
-        return new ByteArrayInputStream(str.toString().getBytes());
+        try {
+            return new ByteArrayInputStream(str.toString().getBytes(sqlFileEncoding));
+        } catch (UnsupportedEncodingException e) {
+            String msg = "The encoding is unsupported: " + sqlFileEncoding;
+            throw new IllegalStateException(msg, e); // as system error
+        }
     }
 
     /**
