@@ -9,9 +9,7 @@ import java.util.List;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IWordDetector;
-import org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.DfColor;
 import org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.DfColorManager;
-import org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.rule.CombinedWordRule;
 
 /**
  * @author masa
