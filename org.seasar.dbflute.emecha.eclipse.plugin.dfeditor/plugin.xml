@@ -6,8 +6,8 @@
          point="org.eclipse.ui.editors">
       <editor
             name="DFProp Editor"
-            icon="icons/dfeditor.gif"
-            extensions="dfprop,dataprop"
+            icon="icons/dfeditor2.gif"
+            extensions="dfprop,dataprop,diffmap"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.DFPropEditor"
             id="org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.DFPropEditor">
