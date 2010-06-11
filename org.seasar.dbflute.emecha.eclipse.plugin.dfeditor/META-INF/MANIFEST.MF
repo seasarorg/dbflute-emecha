@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: EMecha DFEditor
 Bundle-SymbolicName: org.seasar.dbflute.emecha.eclipse.plugin.dfeditor;singleton:=true
-Bundle-Version: 0.0.1.21
+Bundle-Version: 0.0.2
 Bundle-Activator: org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.DFEditorActivator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
