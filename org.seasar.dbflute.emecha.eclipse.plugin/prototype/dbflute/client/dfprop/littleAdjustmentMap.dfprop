@@ -6,6 +6,7 @@
 # o isAvailableAddingSchemaToTableSqlName: (NotRequired - Default false)
 # o isAvailableAddingCatalogToTableSqlName: (NotRequired - Default false)
 # o isAvailableDatabaseDependency: (NotRequired - Default false)
+# o isAvailableDatabaseNativeJDBC: (NotRequired - Default false)
 # o isAvailableNonPrimaryKeyWritable: (NotRequired - Default false)
 # o isCheckSelectedClassification: (NotRequired - Default false)
 # o isForceClassificationSetting: (NotRequired - Default false)
@@ -56,6 +57,19 @@ map:{
     #     Non.
     #
     #; isAvailableDatabaseDependency = false
+    # - - - - - - - - - -/
+
+    # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # o isAvailableDatabaseNativeJDBC: (NotRequired - Default false)
+    #   [true]
+    #     Use classes of database native JDBC on generated classes
+    #     to get best performances of DB access.
+    #     Your project needs to refer to database native JDBC.
+    #
+    #   [false]
+    #     Non.
+    #
+    #; isAvailableDatabaseNativeJDBC = false
     # - - - - - - - - - -/
 
     # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
