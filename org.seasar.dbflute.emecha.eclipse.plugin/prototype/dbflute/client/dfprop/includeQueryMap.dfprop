@@ -10,6 +10,7 @@
 # PropertyType: String, Number, Date
 # Operand: NotEqual, GreaterThan, LessThan, GreaterEqual, LessEqual, PrefixSearch
 #          , InScope, NotInScope, LikeSearch, NotLikeSearch, EmptyString
+#          , FromTo, DateFromTo
 # 
 # Example:
 # map:{
@@ -53,6 +54,8 @@ map:{
     }
     ; Date = map:{
         ; NotEqual = map:{}
+        ; InScope = map:{}
+        ; NotInScope = map:{}
     }
 }
 # ----------------/
