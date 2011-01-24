@@ -2,8 +2,10 @@
 
 set ANT_OPTS=-Xmx256M
 
+set DBFLUTE_HOME=..\mydbflute\dbflute-${versionInfoDBFlute}
+
 set MY_PROJECT_NAME=${project}
 
-set DBFLUTE_HOME=..\mydbflute\dbflute-${versionInfoDBFlute}
+set MY_PROPERTIES_PATH=build.properties
 
 if "%pause_at_end%"=="" set pause_at_end=y
