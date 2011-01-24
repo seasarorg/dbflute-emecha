@@ -45,12 +45,12 @@ public class DBFluteNewClientPageFinishHandler {
     //                                                                     Finish Handling
     //                                                                     ===============
     public void handleFinish(IProgressMonitor monitor) throws CoreException {
-        // Top Level Definition
+        // top level definition
         final EmProgressMonitor progressMonitor = new EmProgressMonitor(monitor);
         final EmWorkspaceRoot workspaceRoot = EmWorkspaceRoot.create();
         final EmContainer container = workspaceRoot.findContainer(newClientPageResult.getOutputDirectory());
 
-        // Create directory of dbflute_[project].
+        // create directory of dbflute_[project].
         container.createDir(buildDBFluteClientDirectoryName(newClientPageResult));
 
         final EmPrototypeEntry prototypeEntry = EmPrototypeEntry.create();
@@ -58,7 +58,7 @@ public class DBFluteNewClientPageFinishHandler {
         for (URL url : entryList) {
             final String path = buildOutputPath(url.getPath());
 
-            if (isDirectory(path)) {// for Directory
+            if (isDirectory(path)) { // for directory
                 container.createDir(extractDirectoryPath(path));
                 continue;
             }
@@ -91,7 +91,7 @@ public class DBFluteNewClientPageFinishHandler {
                     if (filterFileText) {
                         line = filterFileText(line);
                     }
-                    sb.append(line).append(getLineSeparator());
+                    sb.append(line).append(ln());
                 } catch (IOException e) {
                     String msg = "";
                     EmExceptionHandler.throwAsPluginException(msg, e);
@@ -148,8 +148,8 @@ public class DBFluteNewClientPageFinishHandler {
         return path;
     }
 
-    protected String getLineSeparator() {
-        return "\n"; // Not from EmSystemUtil.getLineSeparator()! Because it is possible of creating at windows and use at linux.
+    protected String ln() {
+        return "\n";
     }
 
     // ===================================================================================
@@ -186,7 +186,7 @@ public class DBFluteNewClientPageFinishHandler {
     //                                                                    Filtering Helper
     //                                                                    ================
     protected String filterFileText(String line) {
-        if (line.startsWith("#")) {// Exclude comment line.
+        if (line.startsWith("#")) { // exclude comment line.
             return line;
         }
         return newClientPageResult.filterLineByResult(line, "${", "}");
@@ -195,33 +195,33 @@ public class DBFluteNewClientPageFinishHandler {
     // ===================================================================================
     //                                                                      General Helper
     //                                                                      ==============
-    protected String replace(String text, String fromText, String toText) {
-        if (text == null) {
+    protected String replace(String str, String fromStr, String toStr) {
+        if (str == null || fromStr == null || toStr == null) {
             return null;
         }
-        if (fromText == null || toText == null) {
-            String msg = "The fromText and toText should not be null:";
-            msg = msg + " fromText=" + fromText + " toText=" + toText;
-            throw new IllegalArgumentException(msg);
-        }
-        StringBuffer buf = new StringBuffer(100);
+        StringBuilder sb = null; // lazy load
         int pos = 0;
         int pos2 = 0;
-        while (true) {
-            pos = text.indexOf(fromText, pos2);
-            if (pos == 0) {
-                buf.append(toText);
-                pos2 = fromText.length();
-            } else if (pos > 0) {
-                buf.append(text.substring(pos2, pos));
-                buf.append(toText);
-                pos2 = pos + fromText.length();
-            } else {
-                buf.append(text.substring(pos2));
-                break;
+        do {
+            pos = str.indexOf(fromStr, pos2);
+            if (pos2 == 0 && pos < 0) { // first loop and not found
+                return str; // without creating StringBuilder 
             }
-        }
-        return buf.toString();
+            if (sb == null) {
+                sb = new StringBuilder();
+            }
+            if (pos == 0) {
+                sb.append(toStr);
+                pos2 = fromStr.length();
+            } else if (pos > 0) {
+                sb.append(str.substring(pos2, pos));
+                sb.append(toStr);
+                pos2 = pos + fromStr.length();
+            } else { // (pos < 0) second or after loop only
+                sb.append(str.substring(pos2));
+                return sb.toString();
+            }
+        } while (true);
     }
 
     protected void debug(String log) {
