@@ -243,12 +243,6 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         sqlComment.setFont(JFaceResources.getDialogFont());
         sqlComment.setText("");
         sqlComment.setLayoutData(gd);
-        // TODO EMECHA-14 SQL Name が select で始まる場合は Use CustomizeEntity に自動チェック
-//        sqlComment.addModifyListener(new ModifyListener(){
-//            public void modifyText(ModifyEvent e) {
-//                e.getSource()
-//            }
-//        });
 
         return sqlComment;
     }
