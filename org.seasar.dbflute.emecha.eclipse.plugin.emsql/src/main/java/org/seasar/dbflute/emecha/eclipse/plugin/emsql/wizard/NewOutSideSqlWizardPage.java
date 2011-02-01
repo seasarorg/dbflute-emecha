@@ -37,8 +37,7 @@ import org.eclipse.swt.widgets.Text;
 import org.seasar.dbflute.emecha.eclipse.plugin.emsql.EMSqlPlugin;
 
 /**
- * @author masa
- *
+ * @author Schatten
  */
 public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
 
