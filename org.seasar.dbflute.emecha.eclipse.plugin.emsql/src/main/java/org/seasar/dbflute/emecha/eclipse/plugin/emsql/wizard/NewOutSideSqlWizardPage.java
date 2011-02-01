@@ -48,9 +48,11 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     private IStructuredSelection _selection;
     private boolean initialized = false;
     private boolean useEntity = false;
-    private boolean useParamBean = false;
+    private boolean useParamBean = true;
+    private boolean useAutoDetect = true;
     private boolean usePaging = false;
     private boolean useCursor = false;
+    private boolean useScalar = false;
     /** The output encoding of SQL file. (NotNull: default is same as DBFlute default) */
     private String sqlFileEncoding = "UTF-8";
     private String lineSeparator = System.getProperty("line.separator","\n");
@@ -79,11 +81,25 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
             useCursor = ((Button)e.getSource()).getSelection();
         }
     }
+    protected class DfUseScalarListener implements SelectionListener {
+        public void widgetDefaultSelected(SelectionEvent e) {
+        }
+        public void widgetSelected(SelectionEvent e) {
+            useScalar = ((Button)e.getSource()).getSelection();
+        }
+    }
     protected class DfUsePMDListener implements SelectionListener {
         public void widgetDefaultSelected(SelectionEvent e) {
         }
         public void widgetSelected(SelectionEvent e) {
             useParamBean = ((Button)e.getSource()).getSelection();
+        }
+    }
+    protected class DfUseAutoDetectListener implements SelectionListener {
+        public void widgetDefaultSelected(SelectionEvent e) {
+        }
+        public void widgetSelected(SelectionEvent e) {
+            useAutoDetect = ((Button)e.getSource()).getSelection();
         }
     }
     protected class DfUsePagingListener implements SelectionListener {
@@ -188,7 +204,13 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         Button ce = createSimpleCheckBox(composite, "Use Customize Entity.", 0, new DfUseEntityListener(), useEntity);
         Button cursor = createSimpleCheckBox(composite, "Use Cursor.", 20, new DfUseCursorListener(), useCursor);
         createSelectionDependency(ce, cursor);
+        Button scalar = createSimpleCheckBox(composite, "Use Scalar.", 20, new DfUseScalarListener(), useScalar);
+        createSelectionDependency(ce, scalar);
+        createSelectionOnece(cursor, scalar);
+
         Button pmd = createSimpleCheckBox(composite, "Use Parameter Bean.", 0, new DfUsePMDListener(), useParamBean);
+        Button detect = createSimpleCheckBox(composite, "Use Auto Detect.", 20, new DfUseAutoDetectListener(), useAutoDetect);
+        createSelectionDependency(pmd, detect);
         Button paging = createSimpleCheckBox(composite, "Use Paging.", 20, new DfUsePagingListener(), usePaging);
         createSelectionDependency(pmd, paging);
     }
@@ -221,6 +243,12 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         sqlComment.setFont(JFaceResources.getDialogFont());
         sqlComment.setText("");
         sqlComment.setLayoutData(gd);
+        // TODO EMECHA-14 SQL Name が select で始まる場合は Use CustomizeEntity に自動チェック
+//        sqlComment.addModifyListener(new ModifyListener(){
+//            public void modifyText(ModifyEvent e) {
+//                e.getSource()
+//            }
+//        });
 
         return sqlComment;
     }
@@ -261,6 +289,39 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
             }
         });
         slave.setEnabled(master.getSelection());
+    }
+    /**
+     * Creates a selection one between a master and a slave Button.
+     *
+     * @param master The master button that controls the state of the slave
+     * @param slave The slave button that controls the state of the master
+     */
+    protected void createSelectionOnece(final Button master, final Button slave) {
+
+        master.addSelectionListener(new SelectionListener() {
+
+            public void widgetDefaultSelected(SelectionEvent event) {
+                // Do nothing
+            }
+
+            public void widgetSelected(SelectionEvent event) {
+                if (master.getSelection() && slave.getSelection()) {
+                    slave.setSelection(false);
+                }
+            }
+        });
+        slave.addSelectionListener(new SelectionListener() {
+
+            public void widgetDefaultSelected(SelectionEvent event) {
+                // Do nothing
+            }
+
+            public void widgetSelected(SelectionEvent event) {
+                if (master.getSelection() && slave.getSelection()) {
+                    master.setSelection(false);
+                }
+            }
+        });
     }
 
     /**
@@ -435,16 +496,25 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
                 str.append("-- +cursor+");
                 str.append(getLineSeparator());
             }
+            if (useScalar) {
+                str.append("-- +scalar+");
+                str.append(getLineSeparator());
+            }
             str.append(getLineSeparator());
         }
         if ( useParamBean ) {
             if ( usePaging ) {
-                str.append("-- !df:pmb extends SPB!");
+                str.append("-- !df:pmb extends Paging!");
             } else {
                 str.append("-- !df:pmb!");
             }
-            str.append(getLineSeparator());
-            str.append(getParamBeanColumnsString());
+            if (useAutoDetect) {
+                str.append(getLineSeparator());
+                str.append("-- !!AutoDetect!!");
+            } else {
+                str.append(getLineSeparator());
+                str.append(getParamBeanColumnsString());
+            }
             str.append(getLineSeparator());
             if ( usePaging ) {
                 str.append(getLineSeparator());
