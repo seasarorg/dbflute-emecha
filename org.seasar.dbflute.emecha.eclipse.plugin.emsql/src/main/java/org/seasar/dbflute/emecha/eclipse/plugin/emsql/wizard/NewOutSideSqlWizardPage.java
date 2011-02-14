@@ -34,6 +34,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.seasar.dbflute.emecha.eclipse.plugin.emsql.EMSqlPlugin;
@@ -48,7 +49,7 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     private static final String PAGE_NAME = "NewOutSideSqlPage";
     private IStructuredSelection _selection;
     private boolean initialized = false;
-    private boolean useEntity = false;
+    private boolean useEntity = true;
     private boolean useParamBean = true;
     private boolean useAutoDetect = true;
     private boolean usePaging = false;
@@ -60,6 +61,30 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     private String lineSeparator = System.getProperty("line.separator","\n");
     private boolean useComment = true;
     private String sqlCommentStr = "";
+
+    private enum SqlType {
+        SELECT,
+        UPDATE,
+        INSERT,
+        DELETE,
+        DML,
+        OTHER
+    }
+    private SqlType sqlType = SqlType.SELECT;
+
+    protected class DfSqlTypeListener implements SelectionListener {
+        private final SqlType type;
+        protected DfSqlTypeListener(SqlType sqlType) {
+            this.type = sqlType;
+        }
+        public void widgetDefaultSelected(SelectionEvent e) {
+        }
+        public void widgetSelected(SelectionEvent e) {
+            if (((Button)e.getSource()).getSelection()) {
+                sqlType = type;
+            }
+        }
+    }
 
     protected class DfUseCommentListener implements SelectionListener {
         public void widgetDefaultSelected(SelectionEvent e) {
@@ -165,7 +190,7 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         Composite composite= new Composite(parent, SWT.NONE);
         composite.setFont(parent.getFont());
 
-        // TODO 画面の作成
+        // 画面の作成
         int nColumns= 4;
         GridLayout layout= new GridLayout();
         layout.numColumns= nColumns;
@@ -215,7 +240,6 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         label2.setText(label);
         label2.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, false, false, 1, 1));
         createSeparator(parent, 3);
-
     }
 
     /**
@@ -223,6 +247,15 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
      * @param composite
      */
     protected void createDBFluteControls(Composite composite) {
+        Group group = createSqlTypeGroup(composite,5);
+        Button select = createSqlTypeRadio(group, "SELECT", new DfSqlTypeListener(SqlType.SELECT));
+        /*Button insert =*/ createSqlTypeRadio(group, "INSERT", new DfSqlTypeListener(SqlType.INSERT));
+        /*Button update =*/ createSqlTypeRadio(group, "UPDATE", new DfSqlTypeListener(SqlType.UPDATE));
+        /*Button delete =*/ createSqlTypeRadio(group, "DELETE", new DfSqlTypeListener(SqlType.DELETE));
+        /*Button other =*/ createSqlTypeRadio(group, "OTHER", new DfSqlTypeListener(SqlType.OTHER));
+        select.setSelection(true);
+
+
         createOptionSeparator(composite, "DBFlute Options");
         Button cmt = createSimpleCheckBox(composite, "Use SQL Title and Description Comment.", 0, new DfUseCommentListener(), useComment);
         Text cmtTxt = createSQLTitleCommentTextBox(composite, 20);
@@ -246,36 +279,72 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
 
         createSelectionOnece(cursor, paging);
         createSelectionOnece(scalar, paging);
+
+        createSelectionDependency(select, ce);
+        createSelectionDependency(select, paging);
+        createSelectionDependency(select, cursor);
+        createSelectionDependency(select, scalar);
+        createSelectionDependency(select, domain);
+    }
+
+    protected Group createSqlTypeGroup(Composite parent, int columnSize) {
+        createEmptySpace(parent, 1);
+        Group group = new Group(parent, SWT.NONE);
+        GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_CENTER );
+        gd.horizontalSpan = 2;
+        group.setLayoutData(gd);
+        GridLayout layout= new GridLayout();
+        layout.numColumns= columnSize;
+        group.setLayout(layout);
+        createEmptySpace(parent, 1);
+        return group;
+    }
+
+    protected Button createSqlTypeRadio(Composite composite, String label, SelectionListener listener) {
+        GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+        gd.horizontalSpan = 1;
+        gd.horizontalIndent = 5;
+
+        Button radio = new Button(composite, SWT.RADIO | SWT.LEFT);
+        radio.setFont(JFaceResources.getDialogFont());
+        radio.setText(label);
+        radio.setLayoutData(gd);
+        if (listener != null) {
+            radio.addSelectionListener(listener);
+        }
+        return radio;
     }
 
     protected Button createSimpleCheckBox(Composite composite, String label, int indent, SelectionListener listener, boolean defaultCheck) {
         createEmptySpace(composite, 1);
-        GridData gd= new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-        gd.horizontalSpan= 3;
-        gd.horizontalIndent= indent;
+        GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+        gd.horizontalSpan = 3;
+        gd.horizontalIndent = indent;
 
-        Button checkBox= new Button(composite, SWT.CHECK);
+        Button checkBox = new Button(composite, SWT.CHECK);
         checkBox.setFont(JFaceResources.getDialogFont());
         checkBox.setText(label);
         checkBox.setLayoutData(gd);
         if (listener != null) {
             checkBox.addSelectionListener(listener);
         }
-
         checkBox.setSelection(defaultCheck);
-
         return checkBox;
     }
+
     protected Text createSQLTitleCommentTextBox(Composite composite, int indent) {
         createEmptySpace(composite, 1);
-        GridData gd= new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-        gd.horizontalSpan= 3;
-        gd.horizontalIndent= indent;
+        GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+        gd.horizontalSpan = 3;
+        gd.horizontalIndent = indent;
 
         Text sqlComment = new Text(composite, SWT.SINGLE | SWT.BORDER);
         sqlComment.setFont(JFaceResources.getDialogFont());
         sqlComment.setLayoutData(gd);
         sqlComment.setText("");
+        sqlComment.setEnabled(true);
+        sqlComment.setEditable(true);
+        sqlComment.setVisible(true);
 
         sqlComment.addModifyListener(new ModifyListener(){
             public void modifyText(ModifyEvent e) {
@@ -292,14 +361,14 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
      * @param parent The parent composite
      */
     public Control createEmptySpace(Composite parent, int span) {
-        Label label= new Label(parent, SWT.LEFT);
-        GridData gd= new GridData();
-        gd.horizontalAlignment= GridData.BEGINNING;
-        gd.grabExcessHorizontalSpace= false;
-        gd.horizontalSpan= span;
-        gd.horizontalIndent= 0;
-        gd.widthHint= 0;
-        gd.heightHint= 0;
+        Label label = new Label(parent, SWT.LEFT);
+        GridData gd = new GridData();
+        gd.horizontalAlignment = GridData.BEGINNING;
+        gd.grabExcessHorizontalSpace = false;
+        gd.horizontalSpan = span;
+        gd.horizontalIndent = 0;
+        gd.widthHint = 0;
+        gd.heightHint = 0;
         label.setLayoutData(gd);
         return label;
     }
@@ -312,11 +381,9 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     protected void createSelectionDependency(final Button master, final Control slave) {
 
         master.addSelectionListener(new SelectionListener() {
-
             public void widgetDefaultSelected(SelectionEvent event) {
                 // Do nothing
             }
-
             public void widgetSelected(SelectionEvent event) {
                 slave.setEnabled(master.getSelection());
             }
@@ -332,11 +399,9 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     protected void createSelectionOnece(final Button master, final Button slave) {
 
         master.addSelectionListener(new SelectionListener() {
-
             public void widgetDefaultSelected(SelectionEvent event) {
                 // Do nothing
             }
-
             public void widgetSelected(SelectionEvent event) {
                 if (master.getSelection() && slave.getSelection()) {
                     slave.setSelection(false);
@@ -344,11 +409,9 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
             }
         });
         slave.addSelectionListener(new SelectionListener() {
-
             public void widgetDefaultSelected(SelectionEvent event) {
                 // Do nothing
             }
-
             public void widgetSelected(SelectionEvent event) {
                 if (master.getSelection() && slave.getSelection()) {
                     master.setSelection(false);
@@ -476,14 +539,14 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         }
         monitor.beginTask("Create SQL file. File name is " + getSQLFileName() + ".", 2);
         try {
-            IPackageFragmentRoot root= getPackageFragmentRoot();
-            IPackageFragment pack= root.getPackageFragment(getPackageText());
+            IPackageFragmentRoot root = getPackageFragmentRoot();
+            IPackageFragment pack = root.getPackageFragment(getPackageText());
             if (pack == null) {
-                pack= root.getPackageFragment(""); //$NON-NLS-1$
+                pack = root.getPackageFragment(""); //$NON-NLS-1$
             }
             if (!pack.exists()) {
-                String packName= pack.getElementName();
-                pack= root.createPackageFragment(packName, true, new SubProgressMonitor(monitor, 1));
+                String packName = pack.getElementName();
+                pack = root.createPackageFragment(packName, true, new SubProgressMonitor(monitor, 1));
             } else {
                 monitor.worked(1);
             }
@@ -522,25 +585,27 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
             str.append(getLineSeparator());
             str.append(getLineSeparator());
         }
-        if ( useEntity ) {
-            str.append("-- #df:entity#");
-            str.append(getLineSeparator());
-            if ( useCursor ) {
-                str.append("-- +cursor+");
+        if (SqlType.SELECT.equals(this.sqlType)) {
+            if ( useEntity ) {
+                str.append("-- #df:entity#");
+                str.append(getLineSeparator());
+                if ( useCursor ) {
+                    str.append("-- +cursor+");
+                    str.append(getLineSeparator());
+                }
+                if (useScalar) {
+                    str.append("-- +scalar+");
+                    str.append(getLineSeparator());
+                }
+                if (useDomain) {
+                    str.append("-- +domain+");
+                    str.append(getLineSeparator());
+                }
                 str.append(getLineSeparator());
             }
-            if (useScalar) {
-                str.append("-- +scalar+");
-                str.append(getLineSeparator());
-            }
-            if (useDomain) {
-                str.append("-- +domain+");
-                str.append(getLineSeparator());
-            }
-            str.append(getLineSeparator());
         }
         if ( useParamBean ) {
-            if ( usePaging ) {
+            if (SqlType.SELECT.equals(this.sqlType) && usePaging) {
                 str.append("-- !df:pmb extends Paging!");
             } else {
                 str.append("-- !df:pmb!");
@@ -552,24 +617,74 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
                 str.append(getLineSeparator());
                 str.append(getParamBeanColumnsString());
             }
-            str.append(getLineSeparator());
-            if ( usePaging ) {
-                str.append(getLineSeparator());
-                str.append("/*IF pmb.isPaging()*/");
-                str.append(getLineSeparator());
-                str.append(getLineSeparator());
-                str.append("-- ELSE select count(*)");
-                str.append(getLineSeparator());
-                str.append("/*END*/");
-            }
-            str.append(getLineSeparator());
         }
+        str.append(getLineSeparator());
+        str.append(getTemplateSQL());
         try {
             return new ByteArrayInputStream(str.toString().getBytes(sqlFileEncoding));
         } catch (UnsupportedEncodingException e) {
             String msg = "The encoding is unsupported: " + sqlFileEncoding;
             throw new IllegalStateException(msg, e); // as system error
         }
+    }
+
+    protected String getTemplateSQL() {
+        StringBuilder sql = new StringBuilder();
+        sql.append(getLineSeparator());
+        switch (this.sqlType) {
+        case SELECT:
+            if ( useParamBean && usePaging ) {
+                sql.append("/*IF pmb.isPaging()*/");
+                sql.append(getLineSeparator());
+                sql.append("select ...");
+                sql.append(getLineSeparator());
+                sql.append("-- ELSE select count(*)");
+                sql.append(getLineSeparator());
+                sql.append("/*END*/");
+                sql.append(getLineSeparator());
+            } else {
+                sql.append("select ...");
+                sql.append(getLineSeparator());
+            }
+            sql.append("  from ...");
+            sql.append(getLineSeparator());
+            sql.append(" where ...");
+            sql.append(getLineSeparator());
+            if ( useParamBean && usePaging ) {
+                sql.append("/*IF pmb.isPaging()*/");
+                sql.append(getLineSeparator());
+                sql.append(" order by ...");
+                sql.append(getLineSeparator());
+                sql.append("/*END*/");
+                sql.append(getLineSeparator());
+            } else {
+                sql.append(" order by ...");
+                sql.append(getLineSeparator());
+            }
+            break;
+        case INSERT:
+            sql.append("insert into ...");
+            sql.append(getLineSeparator());
+            break;
+        case DELETE:
+            sql.append("delete from ...");
+            sql.append(getLineSeparator());
+            sql.append(" where ...");
+            sql.append(getLineSeparator());
+            break;
+        case UPDATE:
+            sql.append("update ...");
+            sql.append(getLineSeparator());
+            sql.append("   set ...");
+            sql.append(getLineSeparator());
+            sql.append(" where ...");
+            sql.append(getLineSeparator());
+            break;
+
+        default:
+            break;
+        }
+        return sql.toString();
     }
 
     /**
