@@ -155,6 +155,9 @@ public class NewOutSideSqlWizard extends Wizard implements INewWizard {
         if (typeName == null || typeName.trim().length() == 0) {
             return false;
         }
+        if (!mainPage.validateSqlFileName(typeName)) {
+            return false;
+        }
         return super.canFinish();
     }
 
