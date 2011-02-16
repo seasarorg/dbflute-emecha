@@ -138,7 +138,7 @@ public class NewOutSideSqlWizard extends Wizard implements INewWizard {
     @Override
     public void addPages() {
         mainPage = new NewOutSideSqlWizardPage();
-        mainPage.setTitle("CreateNewOutSideSql");
+        mainPage.setTitle("DBFlute OutSideSql");
         mainPage.setDescription("Create new OutSideSql file.");
         addPage(mainPage);
         mainPage.init(_selection);

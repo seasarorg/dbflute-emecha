@@ -6,6 +6,7 @@ package org.seasar.dbflute.emecha.eclipse.plugin.emsql.wizard;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -308,7 +309,7 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
      */
     protected void createDBFluteControls(Composite composite) {
         Group group = createSqlTypeGroup(composite, 5);
-        Button select = createSqlTypeRadio(group, "SELECT", new DfSqlTypeListener(SqlType.SELECT));
+        final Button select = createSqlTypeRadio(group, "SELECT", new DfSqlTypeListener(SqlType.SELECT));
         /*Button insert =*/createSqlTypeRadio(group, "INSERT", new DfSqlTypeListener(SqlType.INSERT));
         /*Button update =*/createSqlTypeRadio(group, "UPDATE", new DfSqlTypeListener(SqlType.UPDATE));
         /*Button delete =*/createSqlTypeRadio(group, "DELETE", new DfSqlTypeListener(SqlType.DELETE));
@@ -319,34 +320,52 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         select.setFocus();
 
         createOptionSeparator(composite, "DBFlute Options");
-        Button cmt = createSimpleCheckBox(composite, "Use SQL Title and Description Comment.", 0, new DfUseCommentListener(), useComment);
+        final Button cmt = createSimpleCheckBox(composite, "Use SQL Title and Description Comment.", 0, new DfUseCommentListener(), useComment);
         Text cmtTxt = createSQLTitleCommentTextBox(composite, 20);
         createSelectionDependency(cmt, cmtTxt);
-        Button ce = createSimpleCheckBox(composite, "Use Customize Entity.", 0, new DfUseEntityListener(), useEntity);
-        Button cursor = createSimpleCheckBox(composite, "Use Cursor.", 20, new DfUseCursorListener(), useCursor);
+        final Button ce = createSimpleCheckBox(composite, "Use Customize Entity.", 0, new DfUseEntityListener(), useEntity);
+        final Button cursor = createSimpleCheckBox(composite, "Use Cursor.", 20, new DfUseCursorListener(), useCursor);
         createSelectionDependency(ce, cursor);
-        Button scalar = createSimpleCheckBox(composite, "Use Scalar.", 20, new DfUseScalarListener(), useScalar);
+        final Button scalar = createSimpleCheckBox(composite, "Use Scalar.", 20, new DfUseScalarListener(), useScalar);
         createSelectionDependency(ce, scalar);
         createSelectionOnece(cursor, scalar);
-        Button domain = createSimpleCheckBox(composite, "Use Domain.", 20, new DfUseDomainListener(), useDomain);
+        final Button domain = createSimpleCheckBox(composite, "Use Domain.", 20, new DfUseDomainListener(), useDomain);
         createSelectionDependency(ce, domain);
         createSelectionOnece(cursor, domain);
         createSelectionOnece(scalar, domain);
 
-        Button pmd = createSimpleCheckBox(composite, "Use Parameter Bean.", 0, new DfUsePMDListener(), useParamBean);
-        Button detect = createSimpleCheckBox(composite, "Use Auto Detect.", 20, new DfUseAutoDetectListener(), useAutoDetect);
+        final Button pmd = createSimpleCheckBox(composite, "Use Parameter Bean.", 0, new DfUsePMDListener(), useParamBean);
+        final Button detect = createSimpleCheckBox(composite, "Use Auto Detect.", 20, new DfUseAutoDetectListener(), useAutoDetect);
         createSelectionDependency(pmd, detect);
-        Button paging = createSimpleCheckBox(composite, "Use Paging.", 20, new DfUsePagingListener(), usePaging);
+        final Button paging = createSimpleCheckBox(composite, "Use Paging.", 20, new DfUsePagingListener(), usePaging);
         createSelectionDependency(pmd, paging);
 
         createSelectionOnece(cursor, paging);
         createSelectionOnece(scalar, paging);
 
-        createSelectionDependency(select, ce);
-        createSelectionDependency(select, paging);
-        createSelectionDependency(select, cursor);
-        createSelectionDependency(select, scalar);
-        createSelectionDependency(select, domain);
+        // SELECT 選択時のチェックボックス連動
+        select.addSelectionListener(new SelectionListener(){
+            public void widgetDefaultSelected(SelectionEvent e) {
+            }
+            public void widgetSelected(SelectionEvent e) {
+                if (select.getSelection()) {
+                    ce.setEnabled(true);
+                    paging.setEnabled(true);
+                    if (useEntity) {
+                        cursor.setEnabled(true);
+                        scalar.setEnabled(true);
+                        domain.setEnabled(true);
+                    }
+                } else {
+                    ce.setEnabled(false);
+                    paging.setEnabled(false);
+                    cursor.setEnabled(false);
+                    scalar.setEnabled(false);
+                    domain.setEnabled(false);
+                }
+            }
+        });
+
     }
 
     protected Group createSqlTypeGroup(Composite parent, int columnSize) {
@@ -505,7 +524,7 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
      */
     @Override
     protected String getSuperClassLabel() {
-        return "Behavior"; //$NON-NLS-1$
+        return "Beha" + "vior"; //$NON-NLS-1$
     }
 
     /**
@@ -552,6 +571,18 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         return status;
     }
 
+    private static Set<String> failName = new HashSet<String>(Arrays.asList(new String[]{
+            "select", "insert", "delete", "update", "create",
+            "alter", "connect", "usage", "garant", "revoke",
+            "drop", "truncate"
+            }));
+    /**
+     * 禁則ファイル名を取得する。
+     * @return
+     */
+    protected Set<String> getFailNames() {
+        return failName;
+    }
     /**
      * SQL Name Check.
      * @param typeName
@@ -575,16 +606,8 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         if (lastIndexOf > 0) {
             actual = actual.substring(lastIndexOf + 1);
         }
-        for (String valid : new String[] {
-                "select", "insert", "delete", "update",
-                "create", "drop", "alter", "truncate",
-                "connect", "usage", "garant", "revoke" }) {
-            if (valid.equals(actual)) {
-                return false;
-            }
-        }
 
-        return true;
+        return !getFailNames().contains(actual);
     }
 
     /**
