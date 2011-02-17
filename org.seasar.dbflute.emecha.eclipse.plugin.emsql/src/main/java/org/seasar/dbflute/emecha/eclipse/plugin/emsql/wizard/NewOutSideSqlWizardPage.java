@@ -4,6 +4,7 @@
 package org.seasar.dbflute.emecha.eclipse.plugin.emsql.wizard;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
@@ -278,15 +279,14 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
 
         // Initial Source Root Setting
         IJavaProject javaProject = javaElement.getJavaProject();
-        IPackageFragmentRoot resourcePackageFragmentRoot = javaProject.getPackageFragmentRoot(javaProject.getProject()
-                .getName()
-                + "/src/main/resources");
+        IPackageFragmentRoot resourcePackageFragmentRoot = javaProject.getPackageFragmentRoot(javaProject.getProject().getName() + "/src/main/resources");
         setPackageFragmentRoot(resourcePackageFragmentRoot, true);
 
         // 描画する画面を設定
         setControl(composite);
         Dialog.applyDialogFont(composite);
 
+        loadExistsFiles();
         // setFocus(); // 初期フォーカスはSELECTのラジオボタン
         initialized = true;
     }
@@ -563,12 +563,92 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         IPath path = getFileFullPath();
         IFile file = getWorkspaceRoot().getFile(path);
         if (file.exists()) {
-            setErrorMessage("SQL Name already exists.");
+            setErrorMessage("SQL file already exists.");
             setPageComplete(false);
             return new Status(IStatus.ERROR, EMSqlPlugin.PLUGIN_ID, 2, "SQL Name already exists.", null);
         }
+
+        if (checkIgnoreExistsPath(getSQLFileName())) {
+            setErrorMessage("OutSideSql with same name but different case exists.");
+            setPageComplete(false);
+            return new Status(IStatus.ERROR, EMSqlPlugin.PLUGIN_ID, 2, "OutSideSql with same name but different case exists.", null);
+        }
+        if (checkExistsSqlName(typeName)) {
+            setErrorMessage("SQL Name with Behavior but different case exists.");
+            setPageComplete(false);
+            return new Status(IStatus.ERROR, EMSqlPlugin.PLUGIN_ID, 2, "SQL Name with Behavior but different case exists.", null);
+        }
+
         setPageComplete(true);
         return status;
+    }
+
+    /**
+     * ファイル名の大文字小文字を無視した重複チェック
+     * @param name
+     * @return
+     */
+    private boolean checkIgnoreExistsPath(String name) {
+        return ignoreFilePath.contains(name.toLowerCase()+".sql");
+    }
+    /**
+     * 他のBehaviorに紐付く同一のSQLNameのチェック
+     * @param typeName
+     * @return
+     */
+    private boolean checkExistsSqlName(String typeName) {
+        int lastIndexOf = typeName.lastIndexOf("_");
+        if (lastIndexOf > 0 && typeName.length() > lastIndexOf + 1) {
+            return ignoreSQLNames.contains(typeName.toLowerCase().substring(lastIndexOf + 1));
+        } else {
+            return ignoreSQLNames.contains(typeName.toLowerCase());
+        }
+    }
+    private Set<String> ignoreFilePath = new HashSet<String>();
+    private Set<String> ignoreSQLNames = new HashSet<String>();
+    /**
+     * フォルダ配下のSQLファイル名を取得する。
+     */
+    protected void loadExistsFiles() {
+        IPath folderPath = this.getSQLFolderPath();
+        IFile file = getWorkspaceRoot().getFile(folderPath);
+        loadExistsFiles(file.getLocation().toFile());
+    }
+    protected void loadExistsFiles(File file) {
+        if (file.isFile()) {
+            String name = file.getName();
+            if (name.endsWith(".sql")) {
+                ignoreFilePath.add(name.toLowerCase());
+                int lastIndex = name.lastIndexOf("_");
+                if (lastIndex > 0) {
+                    ignoreSQLNames.add(name.substring(lastIndex + 1, name.lastIndexOf(".")).toLowerCase());
+                } else {
+                    ignoreSQLNames.add(name.substring(0, name.lastIndexOf(".")).toLowerCase());
+                }
+            }
+        } else if (file.isDirectory()) {
+            for (File f : file.listFiles()) {
+                loadExistsFiles(f);
+            }
+        }
+    }
+
+    @Override
+    protected IStatus containerChanged() {
+        IStatus ret = super.containerChanged();
+        if (ret.getSeverity() == IStatus.OK) {
+            loadExistsFiles();
+        }
+        return ret;
+    }
+
+    @Override
+    protected IStatus packageChanged() {
+        IStatus ret = super.packageChanged();
+        if (ret.getSeverity() == IStatus.OK) {
+            loadExistsFiles();
+        }
+        return ret;
     }
 
     private static Set<String> failName = new HashSet<String>(Arrays.asList(new String[]{
@@ -657,13 +737,16 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
                 monitor.worked(1);
             }
             IFile file = getWorkspaceRoot().getFile(getFileFullPath());
-
             InputStream source = getInitialSource();
             file.create(source, false, new SubProgressMonitor(monitor, 2));
             if (monitor.isCanceled()) {
                 throw new OperationCanceledException();
             }
             return file;
+        } catch (CoreException e) {
+            setErrorMessage("OutSideSql with same name but different case exists.");
+            setPageComplete(false);
+            throw new CoreException(new Status(IStatus.ERROR, EMSqlPlugin.PLUGIN_ID, 2, e.getMessage(), null));
         } finally {
             monitor.done();
         }
