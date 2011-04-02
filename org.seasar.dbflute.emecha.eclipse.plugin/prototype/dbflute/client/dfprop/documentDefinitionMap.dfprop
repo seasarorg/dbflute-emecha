@@ -3,10 +3,12 @@
 #
 # o documentOutputDirectory (NotRequired - Default './output/doc')
 # o aliasDelimiterInDbComment (NotRequired - Default '')
+# o isAliasBasisInDbComment (NotRequired - Default false)
 # o isEntityJavaDocDbCommentValid (NotRequired - Default false)
 # o isEntityDBMetaDbCommentValid (NotRequired - Default false)
-# o schemaHtmlFileName (NotRequired - Default 'project-schema-[project-name].html')
+# o schemaHtmlFileName (NotRequired - Default 'schema-[project-name].html')
 # o isSuppressSchemaHtmlOutsideSql (NotRequired - Default false)
+# o historyHtmlFileName (NotRequired - Default 'history-[project-name].html')
 # o dataXlsTemplateRecordLimit (NotRequired - Default '')
 # o isDataXlsTemplateContainsCommonColumn (NotRequired - Default false)
 # 
@@ -14,10 +16,12 @@
 # map:{
 #     ; documentOutputDirectory = ./output/doc
 #     ; aliasDelimiterInDbComment = :
+#     ; isAliasBasisInDbComment = true
 #     ; isEntityJavaDocDbCommentValid = true
 #     ; isEntityDBMetaDbCommentValid = true
 #     ; schemaHtmlFileName = xxx.html
 #     ; isSuppressSchemaHtmlOutsideSql = false
+#     ; historyHtmlFileName = xxx.html
 #     ; dataXlsTemplateRecordLimit = 10
 #     ; isDataXlsTemplateContainsCommonColumn = false
 # }
@@ -27,7 +31,7 @@
 map:{
     # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # o documentOutputDirectory (NotRequired - Default './output/doc')
-    #  The output directory mainly for schemaHtml and data xls template.
+    #  The output directory mainly for SchemaHtml and DataXlsTemplate.
     #  Basically you don't need this.
     #  It is considered of value that it always exists at same plain.
     # 
@@ -37,12 +41,21 @@ map:{
     # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # o aliasDelimiterInDbComment (NotRequired - Default '')
     #  If the alias exists in its DB comment like as follows:
-    #    MEMBER_NAME : The name of member
-    #    (For example, the column name is MB_NM)
-    #  You should specify this property as follows:
-    #    ex) aliasDelimiterInDbComment = :
+    #    member name : The name of member's full name
+    #  you can use the alias in DBFlute world, java-doc, SchemaHTML...
+    #  DB comment which does not have the delimiter is not treated
+    #  as alias, treated as description (real comment).
+    #  But you can change it by 'isAliasBasisInDbComment'.
     # 
     #; aliasDelimiterInDbComment = :
+    # - - - - - - - - - -/
+
+    # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # o isAliasBasisInDbComment (NotRequired - Default false)
+    #  Are DB comments as alias basis?
+    #  This property works with 'aliasDelimiterInDbComment'.
+    # 
+    #; isAliasBasisInDbComment = false
     # - - - - - - - - - -/
 
     # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -60,8 +73,8 @@ map:{
     # - - - - - - - - - -/
 
     # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # o schemaHtmlFileName (NotRequired - Default 'project-schema-[project-name].html')
-    #  The file name (not contain path) of schemaHtml.
+    # o schemaHtmlFileName (NotRequired - Default 'schema-[project-name].html')
+    #  The file name (not contain path) of SchemaHtml.
     #  Basically you don't need this.
     #  (For example, when you use Application Behavior, you need this)
     # 
@@ -70,7 +83,7 @@ map:{
 
     # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # o isSuppressSchemaHtmlOutsideSql (NotRequired - Default false)
-    #  Does it remove outsideSql information from schemaHtml?
+    #  Does it remove outsideSql information from SchemaHtml?
     #  Basically you don't need this.
     #  OutsideSql information (related to tables) is very useful.
     # 
@@ -78,8 +91,17 @@ map:{
     # - - - - - - - - - -/
 
     # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # o historyHtmlFileName (NotRequired - Default 'history-[project-name].html')
+    #  The file name (not contain path) of HistoryHtml.
+    #  Basically you don't need this.
+    #  (For example, when you use Application Behavior, you need this)
+    # 
+    #; historyHtmlFileName = xxx.html
+    # - - - - - - - - - -/
+
+    # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # o dataXlsTemplateRecordLimit (NotRequired - Default '')
-    #  Does it output Data Excel Template?
+    #  Does it output Data Excel Template (DataXlsTemplate)?
     #  If it's yes, you should specify the limit of output records.
     #  If this property is minus value, it outputs all records.
     # 
@@ -88,7 +110,7 @@ map:{
 
     # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # o isDataXlsTemplateContainsCommonColumn (NotRequired - Default false)
-    #  Does data excel template contain common columns?
+    #  Does the data excel template contain common columns?
     #  Basically you don't need this
     #  because common columns are resolved on replace-schema.
     # 
