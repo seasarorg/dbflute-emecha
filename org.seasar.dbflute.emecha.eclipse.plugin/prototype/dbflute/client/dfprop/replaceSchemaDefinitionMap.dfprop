@@ -9,6 +9,7 @@
 # o skipSheet: (NotRequired - Default '')
 # o isIncrementSequenceToDataMax: (NotRequired - Default false)
 # o isSuppressBatchUpdate: (NotRequired - Default false)
+# o objectTypeTargetList: (NotRequired - Default databaseInfoMap's)
 # o isDropGenerateTableOnly: (NotRequired - Default false)
 # o isDropGenerateProcedureOnly: (NotRequired - Default false)
 # o filterVariablesMap: (NotRequired - Default map:{})
@@ -71,6 +72,14 @@ map:{
     #  the BatchUpdateException information is very short for debug.
     #
     #; isSuppressBatchUpdate = false
+    # - - - - - - - - - -/
+
+    # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # o objectTypeTargetList: (NotRequired - Default databaseInfoMap's)
+    #  This property overrides databaseInfoMap's one for ReplaceSchema.
+    #    e.g. Synonym of Oracle --> list:{TABLE ; VIEW ; SYNONYM}
+    #
+    #; objectTypeTargetList = list:{TABLE ; VIEW}
     # - - - - - - - - - -/
 
     # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
