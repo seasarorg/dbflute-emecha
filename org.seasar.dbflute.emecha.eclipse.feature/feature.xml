@@ -2,7 +2,7 @@
 <feature
       id="org.seasar.dbflute.emecha.eclipse.feature"
       label="EMecha Feature"
-      version="0.5.1.7">
+      version="0.5.1.8">
 
    <description url="http://www.example.com/description">
       Eclipse Plugin for DBFlute
