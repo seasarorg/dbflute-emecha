@@ -13,8 +13,8 @@
 # o isMakeEntityChaseRelation: (NotRequired - Default false)
 # o isEntityConvertEmptyStringToNull: (NotRequired - Default false)
 # o isMakeConditionQueryEqualEmptyString: (NotRequired - Default false)
-# o isPagingCountLater: (NotRequired - Default false)
-# o isPagingCountLeastJoin: (NotRequired - Default false)
+# o isPagingCountLater: (NotRequired - Default true)
+# o isPagingCountLeastJoin: (NotRequired - Default true)
 # o isInnerJoinAutoDetect: (NotRequired - Default false)
 # o isMakeDeprecated: (NotRequired - Default false)
 # o isMakeRecentlyDeprecated: (NotRequired - Default true)
@@ -151,18 +151,18 @@ map:{
     # - - - - - - - - - -/
 
     # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # o isPagingCountLater: (NotRequired - Default false)
+    # o isPagingCountLater: (NotRequired - Default true)
     #   [true]
     #     The count SQL for paging are executed after paging main select.
     #
     #   [false]
     #     Non.
     #
-    #; isPagingCountLater = false
+    #; isPagingCountLater = true
     # - - - - - - - - - -/
 
     # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # o isPagingCountLeastJoin: (NotRequired - Default false)
+    # o isPagingCountLeastJoin: (NotRequired - Default true)
     #   [true]
     #     Join statements in count SQL of paging select are trimmed
     #     for performance tuning. (only countable joins are valid)
@@ -170,7 +170,7 @@ map:{
     #   [false]
     #     Non.
     #
-    #; isPagingCountLeastJoin = false
+    #; isPagingCountLeastJoin = true
     # - - - - - - - - - -/
 
     # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
