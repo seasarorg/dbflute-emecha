@@ -1,7 +1,11 @@
 package org.seasar.dbflute.emecha.eclipse.plugin.emsql;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ProjectScope;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -10,11 +14,11 @@ import org.osgi.framework.BundleContext;
 public class EMSqlPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.seaser.dbflute.emecha.eclipse.plugin.emsql";
+	public static final String PLUGIN_ID = "org.seasar.dbflute.emecha.eclipse.plugin.emsql";
 
 	// The shared instance
 	private static EMSqlPlugin plugin;
-	
+
 	/**
 	 * The constructor
 	 */
@@ -57,5 +61,13 @@ public class EMSqlPlugin extends AbstractUIPlugin {
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
+	}
+
+	/**
+	 * @param project
+	 * @return PreferenceStore (by the ScopedPreferenceStore with project scope)
+	 */
+	public static IPreferenceStore getPreferenceStore(IProject project) {
+	    return new ScopedPreferenceStore(new ProjectScope(project) , PLUGIN_ID);
 	}
 }

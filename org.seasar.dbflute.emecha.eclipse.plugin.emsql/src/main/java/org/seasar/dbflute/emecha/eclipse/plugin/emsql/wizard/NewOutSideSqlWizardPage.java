@@ -24,8 +24,10 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.wizards.NewTypeWizardPage;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
@@ -41,6 +43,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.seasar.dbflute.emecha.eclipse.plugin.core.util.LogUtil;
 import org.seasar.dbflute.emecha.eclipse.plugin.emsql.EMSqlPlugin;
 
 /**
@@ -51,6 +54,8 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     /** ファイル名の規則 */
     private static final String FILE_NAME_VALIDATE = "^[a-zA-Z0-9_]+$";
     private static final String PAGE_NAME = "NewOutSideSqlPage";
+    private static final String DEFAULT_SQL_OUTPUT_DIR = "/src/main/resources";
+
     private IStructuredSelection _selection;
     private boolean initialized = false;
     private boolean useEntity = true;
@@ -279,16 +284,32 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
 
         // Initial Source Root Setting
         IJavaProject javaProject = javaElement.getJavaProject();
-        IPackageFragmentRoot resourcePackageFragmentRoot = javaProject.getPackageFragmentRoot(javaProject.getProject().getName() + "/src/main/resources");
+        IPackageFragmentRoot resourcePackageFragmentRoot = getInitPackageFragment(javaProject);
         setPackageFragmentRoot(resourcePackageFragmentRoot, true);
 
         // 描画する画面を設定
         setControl(composite);
         Dialog.applyDialogFont(composite);
 
-        loadExistsFiles();
+        loadExistsFiles(javaProject);
         // setFocus(); // 初期フォーカスはSELECTのラジオボタン
         initialized = true;
+    }
+
+    /**
+     * @param javaProject
+     * @return resource output directory
+     */
+    private IPackageFragmentRoot getInitPackageFragment(IJavaProject javaProject) {
+
+        IPreferenceStore preferenceStore = EMSqlPlugin.getPreferenceStore(javaProject.getProject());
+
+        String setting = preferenceStore.getString("resourceOutputDirectory");
+        if (setting != null && !"".equals(setting.trim())) {
+            return javaProject.getPackageFragmentRoot(setting);
+        }
+        String defaultPath = javaProject.getProject().getName() + DEFAULT_SQL_OUTPUT_DIR;
+        return javaProject.getPackageFragmentRoot(defaultPath);
     }
 
     /**
@@ -559,7 +580,11 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
             setPageComplete(false);
             return new Status(IStatus.ERROR, EMSqlPlugin.PLUGIN_ID, "SQL Name is missing.");
         }
-
+        if (getPackageFragmentRoot() == null || !getPackageFragmentRoot().exists()) {
+            setErrorMessage("Source folder is not exists.");
+            setPageComplete(false);
+            return new Status(IStatus.ERROR, EMSqlPlugin.PLUGIN_ID, 2, "SQL Name already exists.", null);
+        }
         IPath path = getFileFullPath();
         IFile file = getWorkspaceRoot().getFile(path);
         if (file.exists()) {
@@ -609,6 +634,25 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     /**
      * フォルダ配下のSQLファイル名を取得する。
      */
+    protected void loadExistsFiles(IJavaProject javaProject) {
+        try {
+            IPackageFragmentRoot[] allRoots = javaProject.getAllPackageFragmentRoots();
+            for (IPackageFragmentRoot root : allRoots) {
+                if (root.getKind() != IPackageFragmentRoot.K_SOURCE) {
+                    continue;
+                }
+                IPath path = root.getPackageFragment(getPackageText()).getPath();
+                IFile file = getWorkspaceRoot().getFile(path);
+                if (file.exists()) {
+                    loadExistsFiles(file.getLocation().toFile());
+                }
+                // TODO JARファイル内も検索するか？
+            }
+        } catch (JavaModelException e) {
+            // TODO: handle exception
+            LogUtil.log(EMSqlPlugin.getDefault(), e);
+        }
+    }
     protected void loadExistsFiles() {
         IPath folderPath = this.getSQLFolderPath();
         IFile file = getWorkspaceRoot().getFile(folderPath);
