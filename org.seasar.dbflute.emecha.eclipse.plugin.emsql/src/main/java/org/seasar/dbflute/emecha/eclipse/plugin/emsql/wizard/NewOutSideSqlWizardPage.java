@@ -10,6 +10,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -53,7 +55,7 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
 
     /** ファイル名の規則 */
     private static final String FILE_NAME_VALIDATE = "^[a-zA-Z0-9_]+$";
-    private static final String PAGE_NAME = "NewOutSideSqlPage";
+    private static final String PAGE_NAME = "NewOutSideSqlPage"; //$NON-NLS-1$
     private static final String DEFAULT_SQL_OUTPUT_DIR = "/src/main/resources";
 
     private IStructuredSelection _selection;
@@ -614,7 +616,7 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
      * @return
      */
     private boolean checkIgnoreExistsPath(String name) {
-        return ignoreFilePath.contains(name.toLowerCase()+".sql");
+        return ignoreFilePath.contains(name.toLowerCase() + getSQLFileExtension());
     }
     /**
      * 他のBehaviorに紐付く同一のSQLNameのチェック
@@ -622,12 +624,7 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
      * @return
      */
     private boolean checkExistsSqlName(String typeName) {
-        int lastIndexOf = typeName.lastIndexOf("_");
-        if (lastIndexOf > 0 && typeName.length() > lastIndexOf + 1) {
-            return ignoreSQLNames.contains(typeName.toLowerCase().substring(lastIndexOf + 1));
-        } else {
-            return ignoreSQLNames.contains(typeName.toLowerCase());
-        }
+        return ignoreSQLNames.contains(getSqlName(typeName).toLowerCase());
     }
     private Set<String> ignoreFilePath = new HashSet<String>();
     private Set<String> ignoreSQLNames = new HashSet<String>();
@@ -639,6 +636,7 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
             IPackageFragmentRoot[] allRoots = javaProject.getAllPackageFragmentRoots();
             for (IPackageFragmentRoot root : allRoots) {
                 if (root.getKind() != IPackageFragmentRoot.K_SOURCE) {
+                    // TODO JARファイル内も検索するか？
                     continue;
                 }
                 IPath path = root.getPackageFragment(getPackageText()).getPath();
@@ -646,7 +644,6 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
                 if (file.exists()) {
                     loadExistsFiles(file.getLocation().toFile());
                 }
-                // TODO JARファイル内も検索するか？
             }
         } catch (JavaModelException e) {
             // TODO: handle exception
@@ -661,20 +658,37 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     protected void loadExistsFiles(File file) {
         if (file.isFile()) {
             String name = file.getName();
-            if (name.endsWith(".sql")) {
+            if (name.endsWith(getSQLFileExtension())) {
                 ignoreFilePath.add(name.toLowerCase());
-                int lastIndex = name.lastIndexOf("_");
-                if (lastIndex > 0) {
-                    ignoreSQLNames.add(name.substring(lastIndex + 1, name.lastIndexOf(".")).toLowerCase());
-                } else {
-                    ignoreSQLNames.add(name.substring(0, name.lastIndexOf(".")).toLowerCase());
-                }
+
+                String sqlName = getSqlName(name);
+                ignoreSQLNames.add(sqlName.toLowerCase());
             }
         } else if (file.isDirectory()) {
             for (File f : file.listFiles()) {
                 loadExistsFiles(f);
             }
         }
+    }
+    protected static String getSqlName(String name) {
+        if (name == null) {
+            return "";
+        }
+        int extensionIndex = name.lastIndexOf('.');
+        String sqlName = extensionIndex < 0 ? name : name.substring(0, extensionIndex);
+
+        int lastUnderMark = sqlName.lastIndexOf('_');
+        sqlName = lastUnderMark < 0 ? sqlName : sqlName.substring(lastUnderMark + 1);
+
+        if (sqlName.matches("^[A-Z]")) {
+            return sqlName;
+        }
+        Pattern pattern = Pattern.compile("^((?=select|update|insert|delete)[a-z]{6})[A-Za-z]*");
+        Matcher matcher = pattern.matcher(sqlName);
+        if (matcher.matches()) {
+            sqlName = sqlName.substring(matcher.group(1).length());
+        }
+        return sqlName;
     }
 
     @Override
@@ -740,7 +754,7 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     protected IPath getFileFullPath() {
         IPath path = getSQLFolderPath();
         String fileName = getSQLFileName();
-        return path.append(fileName + "." + getSQLFileExtension());
+        return path.append(fileName + getSQLFileExtension());
     }
 
     /**
@@ -857,6 +871,7 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
             return new ByteArrayInputStream(str.toString().getBytes(sqlFileEncoding));
         } catch (UnsupportedEncodingException e) {
             String msg = "The encoding is unsupported: " + sqlFileEncoding;
+            setErrorMessage(msg);
             throw new IllegalStateException(msg, e); // as system error
         }
     }
@@ -949,7 +964,7 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     }
 
     public String getSQLFileExtension() {
-        return "sql";
+        return ".sql";
     }
 
 }
