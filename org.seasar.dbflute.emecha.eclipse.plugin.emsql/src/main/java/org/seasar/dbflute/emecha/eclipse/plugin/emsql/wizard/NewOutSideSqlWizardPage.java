@@ -29,7 +29,6 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.wizards.NewTypeWizardPage;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
@@ -47,6 +46,17 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.seasar.dbflute.emecha.eclipse.plugin.core.util.LogUtil;
 import org.seasar.dbflute.emecha.eclipse.plugin.emsql.EMSqlPlugin;
+import org.seasar.dbflute.emecha.eclipse.plugin.emsql.SupportDatabase;
+import org.seasar.dbflute.emecha.eclipse.plugin.emsql.preferences.EMSqlPreferenceStore;
+import org.seasar.dbflute.emecha.eclipse.plugin.emsql.template.ApacheDerbySqlTemplateProcessor;
+import org.seasar.dbflute.emecha.eclipse.plugin.emsql.template.DB2SqlTemplateProcessor;
+import org.seasar.dbflute.emecha.eclipse.plugin.emsql.template.DefaultSqlTemplateProcessor;
+import org.seasar.dbflute.emecha.eclipse.plugin.emsql.template.H2DatabaseSqlTemplateProcessor;
+import org.seasar.dbflute.emecha.eclipse.plugin.emsql.template.ISqlTemplateProcessor;
+import org.seasar.dbflute.emecha.eclipse.plugin.emsql.template.MySQLSqlTemplateProcessor;
+import org.seasar.dbflute.emecha.eclipse.plugin.emsql.template.OracleSqlTemplateProcessor;
+import org.seasar.dbflute.emecha.eclipse.plugin.emsql.template.PostgreSQLSqlTemplateProcessor;
+import org.seasar.dbflute.emecha.eclipse.plugin.emsql.template.SQLServerSqlTemplateProcessor;
 
 /**
  * @author Schatten
@@ -56,7 +66,6 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     /** ファイル名の規則 */
     private static final String FILE_NAME_VALIDATE = "^[a-zA-Z0-9_]+$";
     private static final String PAGE_NAME = "NewOutSideSqlPage"; //$NON-NLS-1$
-    private static final String DEFAULT_SQL_OUTPUT_DIR = "/src/main/resources";
 
     private IStructuredSelection _selection;
     private boolean initialized = false;
@@ -285,15 +294,14 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         setSuperClass(packageFragment.getElementName() + "." + elementName, false);
 
         // Initial Source Root Setting
-        IJavaProject javaProject = javaElement.getJavaProject();
-        IPackageFragmentRoot resourcePackageFragmentRoot = getInitPackageFragment(javaProject);
+        IPackageFragmentRoot resourcePackageFragmentRoot = getInitPackageFragment(javaElement);
         setPackageFragmentRoot(resourcePackageFragmentRoot, true);
 
         // 描画する画面を設定
         setControl(composite);
         Dialog.applyDialogFont(composite);
 
-        loadExistsFiles(javaProject);
+        loadExistsFiles(javaElement);
         // setFocus(); // 初期フォーカスはSELECTのラジオボタン
         initialized = true;
     }
@@ -302,15 +310,10 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
      * @param javaProject
      * @return resource output directory
      */
-    private IPackageFragmentRoot getInitPackageFragment(IJavaProject javaProject) {
-
-        IPreferenceStore preferenceStore = EMSqlPlugin.getPreferenceStore(javaProject.getProject());
-
-        String setting = preferenceStore.getString("resourceOutputDirectory");
-        if (setting != null && !"".equals(setting.trim())) {
-            return javaProject.getPackageFragmentRoot(setting);
-        }
-        String defaultPath = javaProject.getProject().getName() + DEFAULT_SQL_OUTPUT_DIR;
+    private IPackageFragmentRoot getInitPackageFragment(IJavaElement javaElement) {
+        IJavaProject javaProject = javaElement.getJavaProject();
+        EMSqlPreferenceStore preferenceStore = EMSqlPlugin.getPreferenceStore(javaProject.getProject());
+        String defaultPath = preferenceStore.getSqlDirectory(javaElement);
         return javaProject.getPackageFragmentRoot(defaultPath);
     }
 
@@ -631,19 +634,30 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     /**
      * フォルダ配下のSQLファイル名を取得する。
      */
-    protected void loadExistsFiles(IJavaProject javaProject) {
+    protected void loadExistsFiles(IJavaElement javaElement) {
         try {
+            IJavaProject javaProject = javaElement.getJavaProject();
             IPackageFragmentRoot[] allRoots = javaProject.getAllPackageFragmentRoots();
+            IPackageFragmentRoot packageFragmentRoot = getPackageFragmentRoot();
+            boolean extLoad = packageFragmentRoot != null && packageFragmentRoot.exists();
+            String fragmentPath = extLoad ? packageFragmentRoot.getPath().toString() : "";
             for (IPackageFragmentRoot root : allRoots) {
                 if (root.getKind() != IPackageFragmentRoot.K_SOURCE) {
                     // TODO JARファイル内も検索するか？
                     continue;
+                }
+                if (extLoad && fragmentPath.equals(root.getPath().toString())) {
+                    extLoad = false;
                 }
                 IPath path = root.getPackageFragment(getPackageText()).getPath();
                 IFile file = getWorkspaceRoot().getFile(path);
                 if (file.exists()) {
                     loadExistsFiles(file.getLocation().toFile());
                 }
+            }
+            if (extLoad) {
+                // 出力先ソースフォルダが読み込まれていなかった場合、設定内容で再度読み込み
+                loadExistsFiles();
             }
         } catch (JavaModelException e) {
             // TODO: handle exception
@@ -652,8 +666,10 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     }
     protected void loadExistsFiles() {
         IPath folderPath = this.getSQLFolderPath();
-        IFile file = getWorkspaceRoot().getFile(folderPath);
-        loadExistsFiles(file.getLocation().toFile());
+        if (folderPath != null) {
+            IFile file = getWorkspaceRoot().getFile(folderPath);
+            loadExistsFiles(file.getLocation().toFile());
+        }
     }
     protected void loadExistsFiles(File file) {
         if (file.isFile()) {
@@ -753,16 +769,23 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
      */
     protected IPath getFileFullPath() {
         IPath path = getSQLFolderPath();
-        String fileName = getSQLFileName();
-        return path.append(fileName + getSQLFileExtension());
+        if (path != null) {
+            String fileName = getSQLFileName();
+            return path.append(fileName + getSQLFileExtension());
+        }
+        return null;
     }
 
     /**
      * @return
      */
     protected IPath getSQLFolderPath() {
-        IPath path = getPackageFragmentRoot().getPackageFragment(getPackageText()).getPath();
-        return path;
+        IPackageFragmentRoot packageFragmentRoot = getPackageFragmentRoot();
+        if (packageFragmentRoot != null && packageFragmentRoot.exists()) {
+            IPath path = packageFragmentRoot.getPackageFragment(getPackageText()).getPath();
+            return path;
+        }
+        return null;
     }
 
     /**
@@ -794,7 +817,8 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
             } else {
                 monitor.worked(1);
             }
-            IFile file = getWorkspaceRoot().getFile(getFileFullPath());
+            IPath fileFullPath = getFileFullPath();
+            IFile file = getWorkspaceRoot().getFile(fileFullPath);
             InputStream source = getInitialSource();
             file.create(source, false, new SubProgressMonitor(monitor, 2));
             if (monitor.isCanceled()) {
@@ -877,62 +901,62 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
     }
 
     protected String getTemplateSQL() {
+        ISqlTemplateProcessor templateProcessor = getSqlTemplateProcessor();
+        templateProcessor.setLineSeparator(getLineSeparator());
+
         StringBuilder sql = new StringBuilder();
         sql.append(getLineSeparator());
         switch (this.sqlType) {
         case SELECT:
             if (useParamBean && usePaging) {
-                sql.append("/*IF pmb.isPaging()*/");
-                sql.append(getLineSeparator());
-                sql.append("select ...");
-                sql.append(getLineSeparator());
-                sql.append("-- ELSE select count(*)");
-                sql.append(getLineSeparator());
-                sql.append("/*END*/");
-                sql.append(getLineSeparator());
+                sql.append(templateProcessor.getSelectPagingSqlTemplate());
             } else {
-                sql.append("select ...");
-                sql.append(getLineSeparator());
-            }
-            sql.append("  from ...");
-            sql.append(getLineSeparator());
-            sql.append(" where ...");
-            sql.append(getLineSeparator());
-            if (useParamBean && usePaging) {
-                sql.append("/*IF pmb.isPaging()*/");
-                sql.append(getLineSeparator());
-                sql.append(" order by ...");
-                sql.append(getLineSeparator());
-                sql.append("/*END*/");
-                sql.append(getLineSeparator());
-            } else {
-                sql.append(" order by ...");
-                sql.append(getLineSeparator());
+                sql.append(templateProcessor.getSelectSqlTemplate());
             }
             break;
         case INSERT:
-            sql.append("insert into ...");
-            sql.append(getLineSeparator());
+            sql.append(templateProcessor.getInsertSqlTemplate());
             break;
         case DELETE:
-            sql.append("delete from ...");
-            sql.append(getLineSeparator());
-            sql.append(" where ...");
-            sql.append(getLineSeparator());
+            sql.append(templateProcessor.getDeleteSqlTemplate());
             break;
         case UPDATE:
-            sql.append("update ...");
-            sql.append(getLineSeparator());
-            sql.append("   set ...");
-            sql.append(getLineSeparator());
-            sql.append(" where ...");
-            sql.append(getLineSeparator());
+            sql.append(templateProcessor.getUpdateSqlTemplate());
             break;
-
         default:
             break;
         }
         return sql.toString();
+    }
+
+    protected ISqlTemplateProcessor getSqlTemplateProcessor() {
+        IJavaElement javaElement = getInitialJavaElement(this._selection);
+        EMSqlPreferenceStore preferenceStore = EMSqlPlugin.getPreferenceStore(javaElement.getJavaProject().getProject());
+        String databaseName = preferenceStore.getDatabaseName(javaElement);
+        SupportDatabase dbType = SupportDatabase.nameOf(databaseName);
+        if (dbType == null) {
+            return new DefaultSqlTemplateProcessor();
+        }
+        switch (dbType) {
+        case MySQL:
+            return new MySQLSqlTemplateProcessor();
+        case PostgreSQL:
+        case SQLite:   // same sql used.
+            return new PostgreSQLSqlTemplateProcessor();
+        case Oracle:
+            return new OracleSqlTemplateProcessor();
+        case DB2:
+            return new DB2SqlTemplateProcessor();
+        case SQLServer:
+        case Sybase:   // same sql used.
+            return new SQLServerSqlTemplateProcessor();
+        case H2Database:
+            return new H2DatabaseSqlTemplateProcessor();
+        case ApacheDerby:
+            return new ApacheDerbySqlTemplateProcessor();
+        default:
+            return new DefaultSqlTemplateProcessor();
+        }
     }
 
     /**
