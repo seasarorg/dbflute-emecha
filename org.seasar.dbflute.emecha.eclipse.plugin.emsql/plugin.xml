@@ -42,4 +42,27 @@
                </action>
          </objectContribution>
    </extension>
+   <extension
+       point="org.eclipse.ui.propertyPages">
+        <page
+            class="org.seasar.dbflute.emecha.eclipse.plugin.emsql.preferences.EMSqlPreferencesPage"
+            id="org.seasar.dbflute.emecha.eclipse.plugin.emsql.PreferencesPage"
+            name="EMSql">
+        <enabledWhen>
+            <or>
+               <instanceof
+                     value="org.eclipse.core.resources.IProject">
+               </instanceof>
+               <instanceof
+                     value="org.eclipse.jdt.core.IJavaProject">
+               </instanceof>
+<!--
+               <instanceof
+                     value="org.eclipse.jdt.core.IPackageFragment">
+               </instanceof>
+-->
+            </or>
+        </enabledWhen>
+      </page>
+   </extension>
 </plugin>

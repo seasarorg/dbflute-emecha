@@ -47,7 +47,7 @@ import org.eclipse.swt.widgets.Text;
 import org.seasar.dbflute.emecha.eclipse.plugin.core.util.LogUtil;
 import org.seasar.dbflute.emecha.eclipse.plugin.emsql.EMSqlPlugin;
 import org.seasar.dbflute.emecha.eclipse.plugin.emsql.SupportDatabase;
-import org.seasar.dbflute.emecha.eclipse.plugin.emsql.preferences.EMSqlPreferenceStore;
+import org.seasar.dbflute.emecha.eclipse.plugin.emsql.preferences.EMSqlPreferences;
 import org.seasar.dbflute.emecha.eclipse.plugin.emsql.template.ApacheDerbySqlTemplateProcessor;
 import org.seasar.dbflute.emecha.eclipse.plugin.emsql.template.DB2SqlTemplateProcessor;
 import org.seasar.dbflute.emecha.eclipse.plugin.emsql.template.DefaultSqlTemplateProcessor;
@@ -312,9 +312,14 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
      */
     private IPackageFragmentRoot getInitPackageFragment(IJavaElement javaElement) {
         IJavaProject javaProject = javaElement.getJavaProject();
-        EMSqlPreferenceStore preferenceStore = EMSqlPlugin.getPreferenceStore(javaProject.getProject());
-        String defaultPath = preferenceStore.getSqlDirectory(javaElement);
+        EMSqlPreferences preferenceStore = EMSqlPlugin.getProjectPreferences(javaProject.getProject());
+        String defaultPath = preferenceStore.getSqlDirectory(getPackageName(javaElement));
         return javaProject.getPackageFragmentRoot(defaultPath);
+    }
+    public String getPackageName(IJavaElement javaElement) {
+        IPackageFragment packageFragment = (IPackageFragment) javaElement.getAncestor(IJavaElement.PACKAGE_FRAGMENT);
+        String packageName = packageFragment.getElementName();
+        return packageName;
     }
 
     /**
@@ -931,8 +936,8 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
 
     protected ISqlTemplateProcessor getSqlTemplateProcessor() {
         IJavaElement javaElement = getInitialJavaElement(this._selection);
-        EMSqlPreferenceStore preferenceStore = EMSqlPlugin.getPreferenceStore(javaElement.getJavaProject().getProject());
-        String databaseName = preferenceStore.getDatabaseName(javaElement);
+        EMSqlPreferences preferenceStore = EMSqlPlugin.getProjectPreferences(javaElement.getJavaProject().getProject());
+        String databaseName = preferenceStore.getDatabaseName(getPackageName(javaElement));
         SupportDatabase dbType = SupportDatabase.nameOf(databaseName);
         if (dbType == null) {
             return new DefaultSqlTemplateProcessor();

@@ -5,8 +5,9 @@ package org.seasar.dbflute.emecha.eclipse.plugin.emsql.preferences;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
-import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.osgi.service.prefs.Preferences;
 
 /**
  * EMSpql 設定情報アクセス
@@ -14,38 +15,75 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
  */
 public class EMSqlPreferenceStore extends ScopedPreferenceStore {
 
-    private static final String DATABASE_TYPE_KEY = "database";
-    private static final String OUTPUT_DIRECTORY_KEY = "sqlDirectory";
-
-    private static final String DEFAULT_SQL_OUTPUT_DIR = "/src/main/resources";
-
-    private final IProject project;
-    /**
+     /**
      * @param context
      * @param qualifier
      */
     public EMSqlPreferenceStore(IProject project, String qualifier) {
         super(new ProjectScope(project), qualifier);
-        this.project = project;
+    }
+    public Preferences getPreferenceChildNode(String keyName) {
+        IEclipsePreferences[] preferenceNodes = this.getPreferenceNodes(false);
+        IEclipsePreferences projectPreferences = preferenceNodes[0];
+        return projectPreferences.node(keyName);
     }
 
-    public String getSqlDirectory() {
-        String outputDir = getString(OUTPUT_DIRECTORY_KEY);
-        if (outputDir != null && !"".equals(outputDir.trim())) {
-            return outputDir;
+    public String getRecursivePackagePreference(String keyName, String packageName) {
+        Preferences node = getPreferenceChildNode(keyName);
+        if (node == null) {
+            return null;
         }
-        return project.getProject().getName() + DEFAULT_SQL_OUTPUT_DIR;
+        while (packageName.length() > 0) {
+            String nodeValue = node.get(packageName, null);
+            if (nodeValue != null && !"".equals(nodeValue.trim())) {
+                return nodeValue;
+            }
+            int lastIndexOf = packageName.lastIndexOf('.');
+            if (lastIndexOf < 0) {
+                return null;
+            }
+            packageName = packageName.substring(0,lastIndexOf);
+        }
+        return null;
+    }
+    public String getDeclaredPackagePreference(String keyName, String packageName) {
+        Preferences node = getPreferenceChildNode(keyName);
+        if (node == null) {
+            return null;
+        }
+        String nodeValue = node.get(packageName, null);
+        if (nodeValue != null && !"".equals(nodeValue.trim())) {
+            return nodeValue;
+        }
+        return null;
     }
 
-    public String getSqlDirectory(IJavaElement javaElement) {
-        // TODO package 単位で設定を切り替える対応
-        return getSqlDirectory();
+
+    public void setPreferenceValue(String keyName, String packageName, String value) {
+        if ( packageName == null || packageName.length() == 0) {
+            if (value == null) {
+                this.setValue(keyName, "");
+            } else {
+                this.setValue(keyName, value);
+            }
+        } else {
+            Preferences node = getPreferenceChildNode(keyName);
+            if (value == null || value.length() == 0) {
+                node.remove(packageName);
+            } else {
+                node.put(packageName, value);
+            }
+        }
     }
-    public String getDatabaseName() {
-        return this.getString(DATABASE_TYPE_KEY);
+
+    public void removePreferenceValue(String keyName, String packageName) {
+        if ( packageName == null || packageName.length() == 0) {
+            this.setValue(keyName, "");
+        } else{
+            Preferences node = getPreferenceChildNode(keyName);
+            node.remove(packageName);
+        }
+
     }
-    public String getDatabaseName(IJavaElement javaElement) {
-        // TODO package 単位で設定を切り替える対応
-        return getDatabaseName();
-    }
+
 }

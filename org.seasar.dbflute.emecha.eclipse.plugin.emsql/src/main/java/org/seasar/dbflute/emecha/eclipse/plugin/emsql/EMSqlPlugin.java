@@ -4,7 +4,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-import org.seasar.dbflute.emecha.eclipse.plugin.emsql.preferences.EMSqlPreferenceStore;
+import org.seasar.dbflute.emecha.eclipse.plugin.emsql.preferences.EMSqlPreferences;
+import org.seasar.dbflute.emecha.eclipse.plugin.emsql.preferences.impl.EMSqlPreferencesImpl;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -65,7 +66,7 @@ public class EMSqlPlugin extends AbstractUIPlugin {
 	 * @param project
 	 * @return PreferenceStore (by the ScopedPreferenceStore with project scope)
 	 */
-	public static EMSqlPreferenceStore getPreferenceStore(IProject project) {
-	    return new EMSqlPreferenceStore( project, PLUGIN_ID);
+	public static EMSqlPreferences getProjectPreferences(IProject project) {
+	    return new EMSqlPreferencesImpl( project, PLUGIN_ID);
 	}
 }
