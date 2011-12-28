@@ -141,7 +141,16 @@ public class EMSqlPreferencesPage extends PropertyPage implements IWorkbenchProp
         ArrayList<String> list = new ArrayList<String>();
         list.add(DEFAULT_DATABASE_LABEL); // default
         for (SupportDatabase element : SupportDatabase.values()) {
-            list.add(element.getDbName());
+            switch (element) {
+            case SQLite:
+            case MSAccess:
+            case Sybase:
+                // non-selectable
+                break;
+            default:
+                list.add(element.getDbName());
+                break;
+            }
         }
         return list.toArray(new String[list.size()]);
     }
