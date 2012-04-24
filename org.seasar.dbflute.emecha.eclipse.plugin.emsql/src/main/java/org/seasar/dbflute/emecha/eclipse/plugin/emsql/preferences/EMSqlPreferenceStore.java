@@ -6,6 +6,7 @@ package org.seasar.dbflute.emecha.eclipse.plugin.emsql.preferences;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.osgi.service.prefs.Preferences;
 
@@ -15,16 +16,22 @@ import org.osgi.service.prefs.Preferences;
  */
 public class EMSqlPreferenceStore extends ScopedPreferenceStore {
 
+    private IScopeContext _localStoreContext;
+    private String _localNodeQualifier;
      /**
      * @param context
      * @param qualifier
      */
     public EMSqlPreferenceStore(IProject project, String qualifier) {
         super(new ProjectScope(project), qualifier);
+        _localStoreContext = new ProjectScope(project);
+        _localNodeQualifier = qualifier;
     }
     public Preferences getPreferenceChildNode(String keyName) {
-        IEclipsePreferences[] preferenceNodes = this.getPreferenceNodes(false);
-        IEclipsePreferences projectPreferences = preferenceNodes[0];
+// For befor 3.4
+//        IEclipsePreferences[] preferenceNodes = this.getPreferenceNodes(false);
+//        IEclipsePreferences projectPreferences = preferenceNodes[0];
+        IEclipsePreferences projectPreferences = _localStoreContext.getNode(_localNodeQualifier);
         return projectPreferences.node(keyName);
     }
 
