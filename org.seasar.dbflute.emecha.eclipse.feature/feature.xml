@@ -2,7 +2,7 @@
 <feature
       id="org.seasar.dbflute.emecha.eclipse.feature"
       label="EMecha Feature"
-      version="0.5.3.0">
+      version="0.5.3.1">
 
    <description url="http://www.example.com/description">
       Eclipse Plugin for DBFlute
@@ -33,6 +33,13 @@ http://dbflute.sandbox.seasar.org/ja/environment/license.html
 
    <plugin
          id="org.seasar.dbflute.emecha.eclipse.plugin.emsql"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.seasar.dbflute.emecha.eclipse.plugin.dfassist"
          download-size="0"
          install-size="0"
          version="0.0.0"
