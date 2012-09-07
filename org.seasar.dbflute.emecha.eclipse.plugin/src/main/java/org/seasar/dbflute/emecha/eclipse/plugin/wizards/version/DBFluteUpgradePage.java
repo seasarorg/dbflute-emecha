@@ -195,7 +195,7 @@ public class DBFluteUpgradePage extends WizardPage {
             if(selectedElement instanceof IAdaptable) {
                 IAdaptable adaptable = (IAdaptable)selectedElement;
                 IResource resource = (IResource)adaptable.getAdapter(org.eclipse.core.resources.IResource.class);
-                if(resource != null && resource.getType() != 8) {
+                if(resource != null && resource.getType() != IResource.ROOT) {
                     return resource.getProject();
                 }
             }
