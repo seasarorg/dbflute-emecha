@@ -9,6 +9,13 @@
             name="DBFlute Wizards"/>
       <wizard
             category="org.seasar.dbflute.emecha.eclipse.plugin"
+            class="org.seasar.dbflute.emecha.eclipse.plugin.wizards.project.DBFluteNewProject"
+            icon="icons/sample.gif"
+            id="org.seasar.dbflute.emecha.eclipse.plugin.wizards.client.DBFluteNewProject"
+            name="New DBFlute Project"
+            project="true"/>
+      <wizard
+            category="org.seasar.dbflute.emecha.eclipse.plugin"
             class="org.seasar.dbflute.emecha.eclipse.plugin.wizards.client.DBFluteNewClient"
             icon="icons/sample.gif"
             id="org.seasar.dbflute.emecha.eclipse.plugin.wizards.client.DBFluteNewClient"

@@ -452,6 +452,10 @@ public class DBFluteNewClientPage extends WizardPage {
         createEmptyLabel(container);
     }
 
+    protected void setVersionInfoDownloadDBFluteButtonVisible(boolean visible) {
+        versionInfoDownloadDBFluteButton.setVisible(visible);
+    }
+
     protected void setupDownloadDBFlute() {
         final IRunnableWithProgress runnable = createDownloadDBFluteRunnableWithProgress();
         try {
@@ -474,14 +478,14 @@ public class DBFluteNewClientPage extends WizardPage {
     protected IRunnableWithProgress createDownloadDBFluteRunnableWithProgress() {
         final IRunnableWithProgress runnable = new IRunnableWithProgress() {
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                downloadDBFluteWithProgress(monitor);
+                downloadDBFluteWithProgress(monitor, asResult());
             }
         };
         return runnable;
     }
 
-    protected void downloadDBFluteWithProgress(IProgressMonitor monitor) {
-        final String downloadVersion = versionInfoDBFluteText.getText();
+    protected void downloadDBFluteWithProgress(IProgressMonitor monitor, DBFluteNewClientPageResult result) {
+        final String downloadVersion = result.getVersionInfoDBFlute();
         if (downloadVersion == null || downloadVersion.trim().length() == 0) {
             // Doesn't available?
             // versionInfoDownloadDBFluteButton.setEnabled(false);
@@ -523,7 +527,7 @@ public class DBFluteNewClientPage extends WizardPage {
 
         EmFileUtil.deleteFile(zipFilename); // After Care!
 
-        createDialogChangedDefaultModifyListener().handle();
+        //createDialogChangedDefaultModifyListener().handle();
 
         monitor.worked(3);
         monitor.done();
