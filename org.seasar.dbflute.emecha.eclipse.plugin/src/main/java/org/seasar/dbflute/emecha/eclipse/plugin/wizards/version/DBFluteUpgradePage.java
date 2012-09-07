@@ -5,13 +5,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.zip.ZipInputStream;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IDialogPage;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -66,7 +67,7 @@ public class DBFluteUpgradePage extends WizardPage {
 
     @SuppressWarnings("unused")
     private Button versionInfoLatestSnapshotVersionButton;
-    
+
     @SuppressWarnings("unused")
     private Button versionInfoLatest88VersionButton;
 
@@ -75,7 +76,7 @@ public class DBFluteUpgradePage extends WizardPage {
     // -----------------------------------------------------
     //                                             Selection
     //                                             ---------
-    private ISelection selection;
+    private IStructuredSelection selection;
 
     // ===================================================================================
     //                                                                         Constructor
@@ -84,7 +85,7 @@ public class DBFluteUpgradePage extends WizardPage {
      * Constructor for DBFluteNewClientPage.
      * @param selection Selection. (NotNull)
      */
-    public DBFluteUpgradePage(ISelection selection) {
+    public DBFluteUpgradePage(IStructuredSelection selection) {
         super("wizardPage");
 
         setTitle("DBFlute Upgrade");
@@ -175,32 +176,31 @@ public class DBFluteUpgradePage extends WizardPage {
         final GridData gd = new GridData(GridData.FILL_HORIZONTAL);
         outputDirectoryText.setLayoutData(gd);
         outputDirectoryText.setEditable(false);
-        String projectName = null;
-        if (selection != null && selection.isEmpty() == false && selection instanceof IStructuredSelection) {
-            final IStructuredSelection ssel = (IStructuredSelection) selection;
-            if (!ssel.isEmpty()) {
-                final Object firstElement = ssel.getFirstElement();
-                if (firstElement != null) {
-                    final String firstElementString = firstElement.toString();
-                    if (firstElementString.indexOf(" ") > -1) {
-                        projectName = firstElementString.substring(0, firstElementString.indexOf(" "));
-                        projectName = projectName.trim(); // Because sometimes it has line separator at the rear.
-                    }
-                }
-            }
-            if (ssel.size() > 1) {
-                return;
-            }
-            IResource res = findTopLevelResource(projectName);
-            if (res != null) {
-                outputDirectoryText.setText(res.getFullPath().toString());
-            }
-        }
+        IProject selectProject = getInitialProject(selection);
+        String projectName = selectProject == null ? null : selectProject.getName();
         if (projectName != null) {
             outputDirectoryText.setText(projectName);
         } else {
             outputDirectoryText.setText("");
         }
+    }
+    /**
+     * Get project by selected elements.
+     * @param selection selected elements
+     * @return project of first element.
+     */
+    protected IProject getInitialProject(IStructuredSelection selection) {
+        if(selection != null && !selection.isEmpty()) {
+            Object selectedElement = selection.getFirstElement();
+            if(selectedElement instanceof IAdaptable) {
+                IAdaptable adaptable = (IAdaptable)selectedElement;
+                IResource resource = (IResource)adaptable.getAdapter(org.eclipse.core.resources.IResource.class);
+                if(resource != null && resource.getType() != 8) {
+                    return resource.getProject();
+                }
+            }
+        }
+        return null;
     }
 
     // -----------------------------------------------------
@@ -285,7 +285,7 @@ public class DBFluteUpgradePage extends WizardPage {
         }
         createDialogChangedDefaultModifyListener().handle();
     }
-    
+
     protected void layoutLatest88VersionButton(final Composite container) {
         // Button
         final Button button = new Button(container, SWT.PUSH);
@@ -294,7 +294,7 @@ public class DBFluteUpgradePage extends WizardPage {
             public void widgetSelected(SelectionEvent event) {
                 try {
                     setupLatest88Version();
-                    
+
                     // The button of down-load DBFlute is allowed to push at this timing!
                     versionInfoDownloadDBFluteButton.setEnabled(true);
                 } catch (RuntimeException e) {
@@ -307,11 +307,11 @@ public class DBFluteUpgradePage extends WizardPage {
         });
         versionInfoLatest88VersionButton = button;
     }
-    
+
     protected void setupLatest88Version() {
         final EmMetaFromWebSite config = new EmMetaFromWebSite();
         config.loadMeta();
-        
+
         final String latestVersionDBFlute = config.getLatest88VersionDBFlute();
         if (latestVersionDBFlute != null) {
             versionInfoDBFluteText.setText(latestVersionDBFlute);
@@ -383,7 +383,7 @@ public class DBFluteUpgradePage extends WizardPage {
         }
         monitor.beginTask("", 3);
         monitor.worked(1);
-        
+
         final File mydbflutePureFile;
         {
             final EmWorkspaceRoot workspaceRoot = EmWorkspaceRoot.create();
@@ -533,4 +533,5 @@ public class DBFluteUpgradePage extends WizardPage {
     public String getVersionInfoDBFlute() {
         return versionInfoDBFluteText.getText();
     }
+
 }
