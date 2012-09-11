@@ -12,7 +12,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.ui.INewWizard;
+import org.eclipse.ui.dialogs.WizardNewProjectReferencePage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.seasar.dbflute.emecha.eclipse.plugin.core.exception.EmExceptionHandler;
 import org.seasar.dbflute.emecha.eclipse.plugin.wizards.client.DBFluteNewClientPageFinishHandler;
@@ -24,6 +26,7 @@ import org.seasar.dbflute.emecha.eclipse.plugin.wizards.client.DBFluteNewClientP
 public class DBFluteNewProject extends BasicNewProjectResourceWizard implements INewWizard {
 
     private DBFluteNewClientProjectPage dbfluteClientPage;
+    private WizardNewProjectReferencePage chashReferencePage;
     /**
      *
      */
@@ -43,6 +46,17 @@ public class DBFluteNewProject extends BasicNewProjectResourceWizard implements 
             }
         });
         addPage(dbfluteClientPage);
+        if (chashReferencePage != null) {
+            addPage(chashReferencePage);
+        }
+    }
+    @Override
+    public void addPage(IWizardPage page) {
+        if (page instanceof WizardNewProjectReferencePage && dbfluteClientPage == null) {
+            chashReferencePage = (WizardNewProjectReferencePage)page;
+            return;
+        }
+        super.addPage(page);
     }
 
     @Override
