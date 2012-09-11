@@ -4,16 +4,17 @@
       label="EMecha Feature"
       version="0.5.4.1">
 
-   <description url="http://www.example.com/description">
+   <description url="http://dbflute.sandbox.seasar.org/ja/manual/function/helper/emecha/index.html">
       Eclipse Plugin for DBFlute
    </description>
 
-   <copyright url="http://www.example.com/copyright">
+   <copyright url="http://dbflute.sandbox.seasar.org/ja/environment/license.html">
       [Enter Copyright Description here.]
    </copyright>
 
-   <license url="http://www.example.com/license">
-      EMecha is free software distributed under the same license as DBFlute.
+   <license url="http://dbflute.sandbox.seasar.org/ja/environment/license.html">
+      EMecha is free software distributed under the same license as
+DBFlute.
 http://dbflute.sandbox.seasar.org/ja/environment/license.html
    </license>
 
