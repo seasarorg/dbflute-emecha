@@ -110,7 +110,7 @@ public class DBFluteNewClientPage extends WizardPage {
      */
     public DBFluteNewClientPage(IStructuredSelection selection) {
         super("wizardPage");
-
+        setPageComplete(false);
         setTitle("DBFlute New Client");
         setDescription("This wizard creates a new DBFlute client.");
         this.selection = selection;

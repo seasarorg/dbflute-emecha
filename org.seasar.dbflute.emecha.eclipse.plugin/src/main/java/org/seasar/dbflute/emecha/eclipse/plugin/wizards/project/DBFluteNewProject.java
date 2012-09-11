@@ -45,7 +45,10 @@ public class DBFluteNewProject extends BasicNewProjectResourceWizard implements 
         addPage(dbfluteClientPage);
     }
 
-
+    @Override
+    public boolean canFinish() {
+        return super.canFinish() && dbfluteClientPage.isPageComplete();
+    }
     /**
      * This method is called when 'Finish' button is pressed in
      * the wizard. We will create an operation and run it
