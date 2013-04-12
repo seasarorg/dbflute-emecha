@@ -8,6 +8,7 @@
 # o isEntityDBMetaDbCommentValid (NotRequired - Default false)
 # o schemaHtmlFileName (NotRequired - Default 'schema-[project-name].html')
 # o isSuppressSchemaHtmlOutsideSql (NotRequired - Default false)
+# o isSuppressSchemaHtmlProcedure (NotRequired - Default false)
 # o historyHtmlFileName (NotRequired - Default 'history-[project-name].html')
 # o isCheckColumnDefOrderDiff (NotRequired - Default false)
 # o isCheckDbCommentDiff (NotRequired - Default false)
@@ -25,14 +26,16 @@
 #     ; isEntityDBMetaDbCommentValid = true
 #     ; schemaHtmlFileName = xxx.html
 #     ; isSuppressSchemaHtmlOutsideSql = false
+#     ; isSuppressSchemaHtmlProcedure = false
 #     ; historyHtmlFileName = xxx.html
 #     ; isCheckColumnDefOrderDiff = true
 #     ; isCheckDbCommentDiff = true
 #     ; isCheckProcedureDiff = true
 #     ; loadDataReverseMap = map:{
 #         ; recordLimit = -1
-#         ; isContainsCommonColumn = true
-#         ; isOutputToPlaySql = true
+#         ; isReplaceSchemaDirectUse = true
+#         ; isOverrideExistingDataFile = false
+#         ; isSynchronizeOriginDate = false
 #     }
 #     ; schemaSyncCheckMap = map:{
 #         ; url = jdbc:...
@@ -113,6 +116,15 @@ map:{
     # - - - - - - - - - -/
 
     # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # o isSuppressSchemaHtmlProcedure (NotRequired - Default false)
+    #  Does it remove procedure information from SchemaHtml?
+    #  Basically you don't need this.
+    #  Procedure information is very useful.
+    #
+    #; isSuppressSchemaHtmlProcedure = false
+    # - - - - - - - - - -/
+
+    # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # o historyHtmlFileName (NotRequired - Default 'history-[project-name].html')
     #  The file name (not contain path) of HistoryHtml.
     #  Basically you don't need this.
@@ -149,13 +161,15 @@ map:{
     #  This property is valid when the property 'recordLimit' is set.
     #  Elements of this map are as below:
     #   o recordLimit: The limit of records to output. Minus means no limit. (NotRequired - Default '')
-    #   o isContainsCommonColumn: Does the data contain common columns? (NotRequired - Default false)
-    #   o isOutputToPlaySql: Does it output the data to playsql? (NotRequired - Default false)
+    #   o isReplaceSchemaDirectUse: Does it output the data to playsql directly? (NotRequired - Default false)
+    #   o isOverrideExistingDataFile: Does it output to existing files? (NotRequired - Default false)
+    #   o isSynchronizeOriginDate: Does it synchronize origin date for date adjustment? (NotRequired - Default false)
     #
     #; loadDataReverseMap = map:{
     #    ; recordLimit = -1
-    #    ; isContainsCommonColumn = false
-    #    ; isOutputToPlaySql = false
+    #    ; isReplaceSchemaDirectUse = false
+    #    ; isOverrideExistingDataFile = false
+    #    ; isSynchronizeOriginDate = false
     #}
     # - - - - - - - - - -/
 
