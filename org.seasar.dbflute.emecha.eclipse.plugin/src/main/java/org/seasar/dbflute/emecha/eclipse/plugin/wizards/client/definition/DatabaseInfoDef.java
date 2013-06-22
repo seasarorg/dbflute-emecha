@@ -24,6 +24,7 @@ public class DatabaseInfoDef {
             o = info("postgresql", "org.postgresql.Driver", "jdbc:postgresql://localhost:5432/xxx");
             TARGET_DATABASE_INFO_LIST.add(o);
         }
+        // unsupported for now
         //{
         //    o = info("firebird", "org.firebirdsql.jdbc.FBDriver", "jdbc:firebirdsql:localhost/3050:xxx");
         //    TARGET_DATABASE_INFO_LIST.add(o);
