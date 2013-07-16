@@ -4,6 +4,7 @@
 package org.seasar.dbflute.emecha.eclipse.plugin.dfassist.jdt;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -129,6 +130,7 @@ public class QuickFixProcessor implements IQuickFixProcessor {
                 case MIN:
                     proposals.add(new DerivedFieldPropertyProposal(context, fieldInfo.copy(Integer.class), 2));
                     proposals.add(new DerivedFieldPropertyProposal(context, fieldInfo.copy(Date.class), 1));
+                    proposals.add(new DerivedFieldPropertyProposal(context, fieldInfo.copy(Timestamp.class), 1));
                     proposals.add(new DerivedFieldPropertyProposal(context, fieldInfo.copy(BigDecimal.class)));
                     proposals.add(new DerivedFieldPropertyProposal(context, fieldInfo.copy(Long.class), -1));
                     break;
