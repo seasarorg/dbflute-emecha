@@ -53,7 +53,7 @@ map:{
     #  If your target language is 'csharp', you can specify 'seasar' only.
     #  Your possible choices are:
     #
-    #       seasar, spring, lucy, guice, cdi
+    #       seasar, spring, guice, cdi
     #
     ; targetContainer = ${targetContainer}
     # - - - - - - - - - -/
