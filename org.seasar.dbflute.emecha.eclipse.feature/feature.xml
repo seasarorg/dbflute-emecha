@@ -2,21 +2,27 @@
 <feature
       id="org.seasar.dbflute.emecha.eclipse.feature"
       label="EMecha Feature"
-      version="0.5.5">
+      version="0.5.6">
 
-   <description url="http://dbflute.sandbox.seasar.org/ja/manual/function/helper/emecha/index.html">
+   <description url="http://dbflute.seasar.org/ja/manual/function/helper/emecha/index.html">
       Eclipse Plugin for DBFlute
    </description>
 
-   <copyright url="http://dbflute.sandbox.seasar.org/ja/environment/license.html">
+   <copyright url="http://dbflute.seasar.org/ja/environment/license.html">
       [Enter Copyright Description here.]
    </copyright>
 
-   <license url="http://dbflute.sandbox.seasar.org/ja/environment/license.html">
+   <license url="http://dbflute.seasar.org/ja/environment/license.html">
       EMecha is free software distributed under the same license as
 DBFlute.
-http://dbflute.sandbox.seasar.org/ja/environment/license.html
+http://dbflute.seasar.org/ja/environment/license.html
    </license>
+
+   <includes
+         id="org.dbflute.emecha.feature"
+         version="0.0.0"
+         optional="true"
+         search-location="self"/>
 
    <plugin
          id="org.seasar.dbflute.emecha.eclipse.plugin"
