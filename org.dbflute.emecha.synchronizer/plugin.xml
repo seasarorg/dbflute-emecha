@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.7"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            name="EMSynchronizer"
+            class="org.dbflute.emecha.synchronizer.preferences.EMSynchronizerPreferencePage"
+            id="org.dbflute.emecha.synchronizer.preferences.EMSynchronizerPreferencePage">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.dbflute.emecha.synchronizer.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="org.dbflute.emecha.synchronizer.EMSynchronizer">
+      </startup>
+   </extension>
+
+</plugin>
