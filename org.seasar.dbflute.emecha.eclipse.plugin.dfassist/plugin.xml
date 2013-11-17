@@ -76,4 +76,15 @@
     </definition>
   </extension>
 
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      <hyperlinkDetector
+            activate="true"
+            class="org.seasar.dbflute.emecha.eclipse.plugin.dfassist.link.OutsideSqlHyperlinkDetector"
+            id="org.dbflute.emecha.assist.outsideSqlHyperlink"
+            name="OutsideSQL Link"
+            targetId="org.eclipse.jdt.ui.javaCode">
+      </hyperlinkDetector>
+   </extension>
+
 </plugin>

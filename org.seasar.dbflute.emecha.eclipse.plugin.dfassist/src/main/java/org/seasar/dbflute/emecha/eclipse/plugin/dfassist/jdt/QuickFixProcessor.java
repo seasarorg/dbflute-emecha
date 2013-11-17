@@ -124,7 +124,7 @@ public class QuickFixProcessor implements IQuickFixProcessor {
         case ASTNode.QUALIFIED_NAME:
             DerivedFieldInfo fieldInfo = createDerivedFieldInfo(context, problem, (Name)selectedNode);
             ASTNode parent = selectedNode.getParent();
-            DfAssistPlugin.log("Problem:" + problem.getProblemId() + ", selectNode:" + selectedNode.getClass() + ", Parent-NodeType:" + parent.getNodeType() + ", Parent-Class:" + parent.getClass());
+//            DfAssistPlugin.log("Problem:" + problem.getProblemId() + ", selectNode:" + selectedNode.getClass() + ", Parent-NodeType:" + parent.getNodeType() + ", Parent-Class:" + parent.getClass());
             if (parent instanceof MethodInvocation) {
                 MethodInvocation parentMethod = (MethodInvocation)parent;
                 String methodName = parentMethod.getName().getFullyQualifiedName();
