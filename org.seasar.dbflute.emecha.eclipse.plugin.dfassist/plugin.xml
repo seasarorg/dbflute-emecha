@@ -87,4 +87,44 @@
       </hyperlinkDetector>
    </extension>
 
+  <extension point="org.eclipse.ui.popupMenus">
+    <objectContribution
+          adaptable="true"
+          id="org.dbflute.emecha.assist.sqlObjectContribution"
+          nameFilter="*.sql"
+          objectClass="org.eclipse.core.resources.IFile">
+      <menu
+            id="org.seasar.dbflute.emecha.eclipse.plugin.menu"
+            label="EMecha"
+            path="additions">
+        <groupMarker name="additions2"/>
+      </menu>
+      <visibility>
+        <and>
+          <objectState
+                name="projectNature"
+                value="org.eclipse.jdt.core.javanature">
+          </objectState>
+          <objectState
+                name="path"
+                value="*/exbhv/*">
+          </objectState>
+        </and>
+      </visibility>
+      <action
+            id="org.dbflute.emecha.assist.OpenCustomizeEntityAction"
+            class="org.seasar.dbflute.emecha.eclipse.plugin.dfassist.action.OpenCustomizeEntityAction"
+            menubarPath="org.seasar.dbflute.emecha.eclipse.plugin.menu/additions2"
+            enablesFor="1"
+            label="%openCustomizeEntity.label">
+      </action>
+      <action
+            id="org.dbflute.emecha.assist.OpenParameterBeanAction"
+            class="org.seasar.dbflute.emecha.eclipse.plugin.dfassist.action.OpenParameterBeanAction"
+            menubarPath="org.seasar.dbflute.emecha.eclipse.plugin.menu/additions2"
+            enablesFor="1"
+            label="%openParameterBean.label">
+      </action>
+    </objectContribution>
+  </extension>
 </plugin>
