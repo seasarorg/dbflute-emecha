@@ -88,15 +88,11 @@ public abstract class AbstractOpenActionBase implements IObjectActionDelegate {
                         IClassFile classFile = findType.getClassFile();
                         classFile.open((IProgressMonitor)null);
                     } else {
-//                        ICompilationUnit compilationUnit = findType.getCompilationUnit();
-//                        compilationUnit.open((IProgressMonitor)null);
                         openFileInEditor(file, findType);
                     }
                 } catch (JavaModelException e) {
-                    // TODO 自動生成された catch ブロック
                     DfAssistPlugin.log(e);
                 } catch (PartInitException e) {
-                    // TODO 自動生成された catch ブロック
                     DfAssistPlugin.log(e);
                 }
             }
@@ -121,7 +117,6 @@ public abstract class AbstractOpenActionBase implements IObjectActionDelegate {
      * @return ターゲットクラス名
      */
     protected String getBasePackageName(IFile file, IJavaProject javap) {
-        // TODO
         String filePath = file.getParent().getFullPath().toString();
         String rootPath = null;
         try {
@@ -132,7 +127,6 @@ public abstract class AbstractOpenActionBase implements IObjectActionDelegate {
                 }
             }
         } catch (JavaModelException e) {
-            // TODO 自動生成された catch ブロック
             DfAssistPlugin.log(e);
         }
         if (rootPath == null) return null;
@@ -145,11 +139,11 @@ public abstract class AbstractOpenActionBase implements IObjectActionDelegate {
     }
     protected String getSqlName(IFile file) {
         String fileName = file.getName();
-        int separateIndex = fileName.indexOf('_');
+        int separateIndex = fileName.lastIndexOf('_');
         int extensionIndex = fileName.lastIndexOf('.');
         if (separateIndex > 0 && extensionIndex > 0) {
             String sqlName = fileName.substring(separateIndex + 1, extensionIndex);
-            Pattern pattern = Pattern.compile("^((?=select|update|insert|delete)[a-z]{6})[A-Za-z]*");
+            Pattern pattern = Pattern.compile("^((?=select|update|insert|delete)[a-z]{6})[A-Za-z0-9]*");
             Matcher matcher = pattern.matcher(sqlName);
             if (matcher.matches()) {
                 sqlName = sqlName.substring(matcher.group(1).length());
