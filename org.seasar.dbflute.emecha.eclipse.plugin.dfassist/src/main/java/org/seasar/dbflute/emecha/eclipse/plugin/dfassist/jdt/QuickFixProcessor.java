@@ -38,7 +38,6 @@ import org.eclipse.jdt.ui.text.java.IInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IProblemLocation;
 import org.eclipse.jdt.ui.text.java.IQuickFixProcessor;
-import org.seasar.dbflute.emecha.eclipse.plugin.dfassist.DfAssistPlugin;
 import org.seasar.dbflute.emecha.eclipse.plugin.dfassist.jdt.derived.DerivedFieldInfo;
 import org.seasar.dbflute.emecha.eclipse.plugin.dfassist.jdt.derived.DerivedFieldPropertyProposal;
 import org.seasar.dbflute.emecha.eclipse.plugin.dfassist.jdt.derived.DerivedType;
@@ -124,7 +123,6 @@ public class QuickFixProcessor implements IQuickFixProcessor {
         case ASTNode.QUALIFIED_NAME:
             DerivedFieldInfo fieldInfo = createDerivedFieldInfo(context, problem, (Name)selectedNode);
             ASTNode parent = selectedNode.getParent();
-//            DfAssistPlugin.log("Problem:" + problem.getProblemId() + ", selectNode:" + selectedNode.getClass() + ", Parent-NodeType:" + parent.getNodeType() + ", Parent-Class:" + parent.getClass());
             if (parent instanceof MethodInvocation) {
                 MethodInvocation parentMethod = (MethodInvocation)parent;
                 String methodName = parentMethod.getName().getFullyQualifiedName();
