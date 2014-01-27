@@ -1,3 +1,18 @@
+/*
+ * Copyright 2014 the Seasar Foundation and the Others.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ */
 package org.seasar.dbflute.emecha.eclipse.plugin.dfeditor;
 
 import java.util.HashMap;
@@ -34,30 +49,31 @@ import org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.FoldingModel;
 
 public class DFPropEditor extends TextEditor {
 
-	private DfColorManager colorManager;
+    private DfColorManager colorManager;
     private DFPropOutlinePage outlinePage;
     private ProjectionSupport projectionSupport;
     private DFPropFileModel dfPropModel;
     private ToggleCommentAction.Factory toggleCommentActionFactory;
-	public DFPropEditor() {
-		super();
+
+    public DFPropEditor() {
+        super();
         toggleCommentActionFactory = new ToggleCommentAction.Factory();
-	}
+    }
 
     /**
      * {@inheritDoc}
      * @see org.eclipse.ui.editors.text.TextEditor#dispose()
      */
-	public void dispose() {
-		super.dispose();
-		colorManager.dispose();
+    public void dispose() {
+        super.dispose();
+        colorManager.dispose();
         if (outlinePage != null) {
             outlinePage.dispose();
         }
         outlinePage = null;
         dfPropModel = null;
         projectionSupport = null;
-	}
+    }
 
     /**
      * {@inheritDoc}
@@ -111,7 +127,7 @@ public class DFPropEditor extends TextEditor {
      * Extended to support the Highlighting of matching parenthesis.
      */
     private void addMatchingCharacterPainter() {
-        ITextViewerExtension2 extension = (ITextViewerExtension2)getSourceViewer();
+        ITextViewerExtension2 extension = (ITextViewerExtension2) getSourceViewer();
         DefaultCharacterPairMatcher matcher = new DefaultCharacterPairMatcher(new char[] { '(', ')', '{', '}', '[', ']' });
         MatchingCharacterPainter painter = new MatchingCharacterPainter(getSourceViewer(), matcher);
         painter.setColor(Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
@@ -141,7 +157,6 @@ public class DFPropEditor extends TextEditor {
         }
         return super.getAdapter(adapter);
     }
-
 
     /**
      * {@inheritDoc}
@@ -183,7 +198,7 @@ public class DFPropEditor extends TextEditor {
      */
     @Override
     protected void initializeKeyBindingScopes() {
-        setKeyBindingScopes(new String[] { "org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.DFPropEditorScope" });  //$NON-NLS-1$
+        setKeyBindingScopes(new String[] { "org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.DFPropEditorScope" }); //$NON-NLS-1$
     }
 
     /**
@@ -215,6 +230,7 @@ public class DFPropEditor extends TextEditor {
         super.doRevertToSaved();
         updateExtensions();
     }
+
     /**
      * Update the display extension.
      * Extended to support the folding.
@@ -246,6 +262,7 @@ public class DFPropEditor extends TextEditor {
         propModel.setFileName(name);
         return propModel;
     }
+
     /**
      * update the display folding
      */
@@ -260,16 +277,17 @@ public class DFPropEditor extends TextEditor {
                 if (next instanceof ProjectionAnnotation) {
                     ProjectionAnnotation annotation = (ProjectionAnnotation) next;
                     Position position = annotationModel.getPosition(annotation);
-                    if(position != null) {
+                    if (position != null) {
                         int offset = position.getOffset();
                         annotationsMap.put(offset, annotation);
                     }
                 }
             }
             Map<Annotation, Position> additions = applyFolding(annotationModel, dfmodel, annotationsMap);
-            annotationModel.modifyAnnotations(annotationsMap.values().toArray(new ProjectionAnnotation[annotationsMap.size()]), additions, new ProjectionAnnotation[0]);
+            annotationModel.modifyAnnotations(annotationsMap.values().toArray(new ProjectionAnnotation[annotationsMap.size()]), additions,new ProjectionAnnotation[0]);
         }
     }
+
     /**
      * set folding positions.
      * @param annotationModel
