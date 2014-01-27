@@ -18,6 +18,7 @@ import org.eclipse.jface.text.rules.ICharacterScanner;
  * A buffered document scanner. The buffer always contains a section
  * of a fixed size of the document to be scanned.
  */
+@Deprecated
 public class BufferedDocumentScanner implements ICharacterScanner {
 	/** The document being scanned. */
 	private IDocument fDocument;

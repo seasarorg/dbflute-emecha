@@ -47,6 +47,9 @@ public abstract class BsDFPropScanner extends BufferedRuleBasedScanner implement
 	protected String fContentType;
 	/** The offset of the partition inside which to resume. */
 	protected int fPartitionOffset;
+	/**
+	 * @see org.eclipse.jface.text.rules.IPartitionTokenScanner#setPartialRange(org.eclipse.jface.text.IDocument, int, int, java.lang.String, int)
+	 */
 	public void setPartialRange(IDocument document, int offset, int length,
 			String contentType, int partitionOffset) {
 		fContentType= contentType;
@@ -78,36 +81,5 @@ public abstract class BsDFPropScanner extends BufferedRuleBasedScanner implement
 		int style = fontManager.getStyle();
 		return new TextAttribute(fore,back,style);
 	}
-
-//	protected Color getDefaultColor() {
-//		return colorManager.getColor(DFPropColorConstants.DEFAULT);
-//	}
-//	protected Color getCommentColor() {
-//		if ( preferenceStore == null ) {
-//			return colorManager.getColor(DFPropColorConstants.DFP_COMMENT);
-//		}
-//		// TODO get prefarence
-//		return colorManager.getColor(DFPropColorConstants.DFP_COMMENT);
-//	}
-//-----------------------------------------------------------------
-// Getter/Setter
-//-----------------------------------------------------------------
-
-
-//	protected ColorManager getColorManager() {
-//		return manager;
-//	}
-//
-//	protected void setColorManager(ColorManager manager) {
-//		this.manager = manager;
-//	}
-//
-//	protected IPreferenceStore getPreferenceStore() {
-//		return store;
-//	}
-//
-//	protected void setPreferenceStore(IPreferenceStore store) {
-//		this.store = store;
-//	}
 
 }
