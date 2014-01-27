@@ -2,7 +2,7 @@ package org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.action;
 
 import org.eclipse.jface.text.*;
 // TODO 
-public class XMLDoubleClickStrategy implements ITextDoubleClickStrategy {
+public class DFPropDoubleClickStrategy implements ITextDoubleClickStrategy {
 	protected ITextViewer fText;
 
 	public void doubleClicked(ITextViewer part) {

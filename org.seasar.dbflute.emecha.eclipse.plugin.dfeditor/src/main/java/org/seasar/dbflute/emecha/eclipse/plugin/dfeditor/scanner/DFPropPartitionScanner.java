@@ -7,9 +7,10 @@ import org.eclipse.jface.text.rules.EndOfLineRule;
 import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
+import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 import org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.DFPropPartitions;
-import org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.rule.TagRule;
+
 /**
  * dfpropのパーティショニングを行うクラス。
  */
@@ -22,8 +23,11 @@ public class DFPropPartitionScanner extends RuleBasedPartitionScanner implements
 
 		List<IPredicateRule> rules = new ArrayList<IPredicateRule>();
 
+        rules.add(new SingleLineRule("/*", "*/", tagPartition));
+        rules.add(new SingleLineRule("\"", "\"", tagPartition));
+        rules.add(new SingleLineRule("'", "'", tagPartition));
+
 		rules.add(new EndOfLineRule("#", dfpComment));
-		rules.add(new TagRule(tagPartition));
 
 		setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));
 	}

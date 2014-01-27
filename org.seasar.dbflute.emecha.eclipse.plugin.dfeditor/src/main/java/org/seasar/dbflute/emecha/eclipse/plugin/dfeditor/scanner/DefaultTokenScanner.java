@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.text.rules.EndOfLineRule;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.WhitespaceRule;
@@ -25,10 +24,10 @@ public class DefaultTokenScanner extends BsDFPropScanner {
         List<IRule> rules = new ArrayList<IRule>();
         rules.add(new WhitespaceRule(new WhitespaceDetector()));
 
-        rules.add(new EndOfLineRule("#",getToken(DfColor.LINE_COMMENT)));
         rules.add(new SingleLineRule("$$","$$",getToken(DfColor.ALIAS_MARK)));
         rules.add(new SingleLineRule("/*","*/",getToken(DfColor.SQL)));
         rules.add(new SingleLineRule("\"","\"",getToken(DfColor.VALIABLE)));
+        rules.add(new SingleLineRule("'","'",getToken(DfColor.VALIABLE)));
 
         CombinedWordRule wordRule = new CombinedWordRule();
         CombinedWordRule.WordMatcher mapMacher = new CombinedWordRule.WordMatcher();
@@ -54,6 +53,10 @@ public class DefaultTokenScanner extends BsDFPropScanner {
         CombinedWordRule.WordMatcher containMacher = new CombinedWordRule.WordMatcher();
         containMacher.addWord("contain:", getToken(DfColor.LIKE_SEARCH_MARK));
         wordRule.addWordMatcher(containMacher);
+
+        CombinedWordRule.WordMatcher sqlMacher = new CombinedWordRule.WordMatcher();
+        sqlMacher.addWord("sql:", getToken(DfColor.LIKE_SEARCH_MARK));
+        wordRule.addWordMatcher(sqlMacher);
 
         rules.add(wordRule);
 

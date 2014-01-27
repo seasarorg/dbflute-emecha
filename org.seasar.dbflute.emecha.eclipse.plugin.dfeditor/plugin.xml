@@ -7,8 +7,7 @@
       <editor
             name="DFProp Editor"
             icon="icons/dfeditor2.gif"
-            extensions="dfprop,dataprop,diffmap"
-            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
             class="org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.DFPropEditor"
             id="org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.DFPropEditor">
             <contentTypeBinding
@@ -16,6 +15,80 @@
             </contentTypeBinding>
       </editor>
    </extension>
+   <extension
+          point="org.eclipse.core.contenttype.contentTypes">
+          <content-type
+                id="dfprop"
+                name="DBFlute Configuration File"
+                default-charset="UTF-8"
+                file-extensions="dfprop,dataprop,diffmap">
+          </content-type>
+    </extension>
+    <extension point="org.eclipse.ui.editors.documentProviders">
+        <provider id="org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.documentProviders"
+               class="org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.DFPropDocumentProvider"
+          extensions="dfprop,dataprop,diffmap">
+      </provider>
+    </extension>
+
+    <extension
+          point="org.eclipse.ui.menus">
+        <menuContribution
+              locationURI="popup:#TextEditorContext?after=group.edit">
+            <command
+                  commandId="org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.ToggleCommentAction" style="push">
+                  <visibleWhen
+                        checkEnabled="false">
+                        <reference
+                              definitionId="isActiveEditorAnInstanceOfDFPropEditor">
+                        </reference>
+                  </visibleWhen>
+            </command>
+        </menuContribution>
+    </extension>
+    <extension
+          point="org.eclipse.core.expressions.definitions">
+        <definition
+              id="isActiveEditorAnInstanceOfDFPropEditor">
+            <with
+                  variable="activeEditorId">
+                <equals
+                      value="org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.DFPropEditor">
+                </equals>
+            </with>
+        </definition>
+    </extension>
+    <extension
+          point="org.eclipse.ui.contexts">
+       <context
+             id="org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.DFPropEditorScope"
+             name="Editing DFPropEditor Source"
+             description="Editing DFPropEditor Source Context"
+             parentId="org.eclipse.ui.textEditorScope">
+       </context>
+    </extension>
+    <extension
+          point="org.eclipse.ui.commands">
+        <command
+            name="Toggle Comment"
+            description="Toggle Comment"
+            categoryId="org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.category.DFPropEditor"
+            id="org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.ToggleCommentAction">
+        </command>
+        <category
+              id="org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.category.DFPropEditor"
+              description="Editing Commands"
+              name="Editing">
+        </category>
+    </extension>
+    <extension
+          point="org.eclipse.ui.bindings">
+        <key sequence="M1+/"
+             commandId="org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.ToggleCommentAction"
+             contextId="org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.DFPropEditorScope"
+             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+              />
+    </extension>
 <!--
    <extension
          point="org.eclipse.ui.preferencePages">
