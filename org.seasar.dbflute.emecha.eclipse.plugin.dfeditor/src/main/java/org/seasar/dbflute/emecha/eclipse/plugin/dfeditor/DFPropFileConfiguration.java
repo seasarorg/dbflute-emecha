@@ -16,15 +16,19 @@
 package org.seasar.dbflute.emecha.eclipse.plugin.dfeditor;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.DefaultTextHover;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextDoubleClickStrategy;
+import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.ITokenScanner;
+import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
+import org.eclipse.ui.texteditor.MarkerAnnotation;
 import org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.action.DFPropDoubleClickStrategy;
 import org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.scanner.BsDFPropScanner;
 import org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.scanner.DFPropCommentScanner;
@@ -47,6 +51,8 @@ public class DFPropFileConfiguration extends TextSourceViewerConfiguration imple
         if (preferenceStore != null) {
             // XXX TAG WHIDTH SETTING
             preferenceStore.setValue(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH, 4);
+            preferenceStore.setValue("errorIndicationInVerticalRuler", true);
+            preferenceStore.setValue("warningIndicationInVerticalRuler", true);
         }
     }
 
@@ -117,5 +123,19 @@ public class DFPropFileConfiguration extends TextSourceViewerConfiguration imple
     @Override
     public String[] getDefaultPrefixes(ISourceViewer sourceViewer, String contentType) {
         return new String[] {"#"};
+    }
+
+    /**
+     * Get Show Marker Text Hover Message.
+     * @see org.eclipse.ui.editors.text.TextSourceViewerConfiguration#getTextHover(org.eclipse.jface.text.source.ISourceViewer, java.lang.String)
+     */
+    @Override
+    public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
+        return new DefaultTextHover(sourceViewer) {
+            @Override
+            protected boolean isIncluded(Annotation annotation) {
+                return annotation instanceof MarkerAnnotation;
+            }
+        };
     }
 }

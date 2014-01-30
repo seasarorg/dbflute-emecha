@@ -89,6 +89,14 @@
              schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
               />
     </extension>
+    <extension
+          point="org.eclipse.core.resources.markers"
+          id="DFPropProblemMarker"
+          name="DFProp Problem">
+          <super type="org.eclipse.core.resources.problemmarker"/>
+          <super type="org.eclipse.core.resources.textmarker"/>
+          <persistent value="true"/>
+    </extension>
 <!--
    <extension
          point="org.eclipse.ui.preferencePages">

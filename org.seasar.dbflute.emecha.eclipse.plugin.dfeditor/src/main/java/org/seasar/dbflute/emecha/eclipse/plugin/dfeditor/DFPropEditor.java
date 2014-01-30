@@ -15,10 +15,19 @@
  */
 package org.seasar.dbflute.emecha.eclipse.plugin.dfeditor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewerExtension2;
@@ -38,17 +47,25 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.action.ToggleCommentAction;
+import org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.BlockModel;
+import org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.CommentModel;
 import org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.DFPropFileModel;
 import org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.DFPropModel;
 import org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.DFPropModelParser;
 import org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.FoldingModel;
+import org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.MapEntryModel;
+import org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.MapModel;
+import org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.MultiLineCommentModel;
 
 public class DFPropEditor extends TextEditor {
 
+    private static final String TOGGLE_COMMENT_ACTION = "ToggleCommentAction";
+    private static final String PROBLEM_MARKER_KEY = DFEditorActivator.PLUGIN_ID + ".DFPropProblemMarker";
     private DfColorManager colorManager;
     private DFPropOutlinePage outlinePage;
     private ProjectionSupport projectionSupport;
@@ -175,10 +192,10 @@ public class DFPropEditor extends TextEditor {
     protected void createToggleCommentAction() {
         ResourceBundle bundle = ResourceBundle.getBundle(DFEditorActivator.class.getPackage().getName() + ".messages");
         ToggleCommentAction action = toggleCommentActionFactory.create(bundle, "ToggleComment.", this);
-        action.setActionDefinitionId(DFEditorActivator.PLUGIN_ID + ".ToggleCommentAction");
-        setAction("ToggleCommentAction", action);
-        markAsStateDependentAction("ToggleCommentAction", true);
-        markAsSelectionDependentAction("ToggleCommentAction", true);
+        action.setActionDefinitionId(DFEditorActivator.PLUGIN_ID + "." + TOGGLE_COMMENT_ACTION);
+        setAction(TOGGLE_COMMENT_ACTION, action);
+        markAsStateDependentAction(TOGGLE_COMMENT_ACTION, true);
+        markAsSelectionDependentAction(TOGGLE_COMMENT_ACTION, true);
         configureToggleCommentAction(action);
     }
 
@@ -198,7 +215,7 @@ public class DFPropEditor extends TextEditor {
      */
     @Override
     protected void initializeKeyBindingScopes() {
-        setKeyBindingScopes(new String[] { "org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.DFPropEditorScope" }); //$NON-NLS-1$
+        setKeyBindingScopes(new String[] { DFEditorActivator.PLUGIN_ID + ".DFPropEditorScope" }); //$NON-NLS-1$
     }
 
     /**
@@ -235,14 +252,20 @@ public class DFPropEditor extends TextEditor {
      * Update the display extension.
      * Extended to support the folding.
      * Extended to support the Outline Page.
+     * Extended to support the problem marker.
      */
     protected void updateExtensions() {
         dfPropModel = createDFModel();
 
         updateFolding(dfPropModel);
         updateOutlinePage(dfPropModel);
+        checkErrors(dfPropModel);
     }
 
+    /**
+     * Get Model of parsed DFProp file.
+     * @return DFProp File Model
+     */
     public DFPropFileModel getDFModel() {
         if (dfPropModel == null) {
             dfPropModel = createDFModel();
@@ -328,6 +351,211 @@ public class DFPropEditor extends TextEditor {
                 }
             };
             runnable.run();
+        }
+    }
+
+    /**
+     * Check Input Error.
+     * Extended to support the duplicate Map Entry's check.
+     * @param dfmodel DFProp Model
+     */
+    private void checkErrors(DFPropModel dfmodel) {
+        IEditorInput input = getEditorInput();
+        if (input instanceof IFileEditorInput) {
+            IFile file = ((IFileEditorInput) input).getFile();
+            clearProblemMarkers(file);
+
+            boolean isMapConfig = isMapPropFile(input.getName());
+            boolean existsMap = false;
+            List<DFPropModel> cache = new ArrayList<DFPropModel>();
+            DFPropModel[] topChild = dfmodel.getChild();
+            for (DFPropModel child : topChild) {
+                if (child instanceof MapModel) {
+                    if (existsMap) {
+                        createExistsMapMarker(file, (MapModel)child);
+                    }
+                    checkDuplicateKeys(file, child);
+                    existsMap = true;
+                } else if (isMapConfig) {
+                    if (child instanceof MultiLineCommentModel || child instanceof CommentModel) {
+                        if (cache.size() > 0) {
+                            DFPropModel first = cache.get(0);
+                            DFPropModel last = cache.get(cache.size() - 1);
+                            createStatementErrorMarker(file, first.getLineNumber(), first.getOffset(), last.getOffset() + last.getLength());
+                            cache = new ArrayList<DFPropModel>();
+                        }
+                    } else {
+                        cache.add(child);
+                    }
+                }
+            }
+            if (cache.size() > 0) {
+                DFPropModel first = cache.get(0);
+                DFPropModel last = cache.get(cache.size() - 1);
+                createStatementErrorMarker(file, first.getLineNumber(), first.getOffset(), last.getOffset() + last.getLength());
+            }
+        }
+    }
+
+    /**
+     * Clear Problem Markers.
+     * @param resource Marker target resource.
+     */
+    private void clearProblemMarkers(IResource resource) {
+        try {
+            resource.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE);
+        } catch (CoreException e) {
+            // log.error(e.getMessage(), e);
+        }
+    }
+
+    private boolean isMapPropFile(String name) {
+        if (name == null) {
+            return false;
+        }
+        int extensionIndex = name.lastIndexOf('.');
+        if (extensionIndex < 0) {
+            return false;
+        }
+        String configName = name.substring(0, extensionIndex);
+        if (configName.endsWith("Map") || configName.endsWith("Map+")) {
+            return true;
+        }
+        String extension = name.substring(extensionIndex + 1);
+        if ("diffmap".equals(extension)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check Map Entry duplicate keys.
+     * @param resource Marker target resource.
+     * @param dfmodel DFProp Models.
+     */
+    private void checkDuplicateKeys(IResource resource, DFPropModel dfmodel) {
+        if (dfmodel instanceof BlockModel && ((BlockModel) dfmodel).isMissingEndBrace()) {
+            createMissingBraceMarker(resource, (BlockModel) dfmodel);
+        }
+        Set<String> keyNames = new HashSet<String>();
+        List<DFPropModel> cache = new ArrayList<DFPropModel>();
+        for (DFPropModel element : dfmodel.getChild()) {
+            if (element instanceof MapEntryModel) {
+                MapEntryModel entry = (MapEntryModel) element;
+                if (keyNames.contains(entry.getNameText())) {
+                    createDuplicateKeyMarker(resource, entry);
+                } else {
+                    keyNames.add(entry.getNameText());
+                }
+            }
+            if (dfmodel instanceof MapModel) {
+                if (element instanceof MultiLineCommentModel || element instanceof CommentModel || element instanceof MapEntryModel) {
+                    if (cache.size() > 0) {
+                        DFPropModel first = cache.get(0);
+                        DFPropModel last = cache.get(cache.size() - 1);
+                        createStatementErrorMarker(resource, first.getLineNumber(), first.getOffset(), last.getOffset() + last.getLength());
+                        cache = new ArrayList<DFPropModel>();
+                    }
+                } else {
+                    cache.add(element);
+                }
+            }
+            checkDuplicateKeys(resource, element);
+        }
+        if (cache.size() > 0) {
+            DFPropModel first = cache.get(0);
+            DFPropModel last = cache.get(cache.size() - 1);
+            createStatementErrorMarker(resource, first.getLineNumber(), first.getOffset(), last.getOffset() + last.getLength());
+        }
+    }
+
+    /**
+     * Create marker of already exists top element  map statement.
+     * @param resource Marker target resource.
+     * @param model Map model.
+     */
+    private void createExistsMapMarker(IResource resource, MapModel model) {
+        try {
+            IMarker marker = resource.createMarker(PROBLEM_MARKER_KEY);
+            Map<String, Object> attribute = new HashMap<String, Object>();
+
+            attribute.put(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+            attribute.put(IMarker.MESSAGE, "Already exists map statement.");
+            attribute.put(IMarker.LINE_NUMBER, model.getLineNumber());
+            attribute.put(IMarker.CHAR_START, model.getOffset());
+            attribute.put(IMarker.CHAR_END, model.getOffset() + model.getStartBrace().length());
+
+            marker.setAttributes(attribute);
+        } catch (CoreException e) {
+            // log.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Create marker of missing end brace.
+     * @param resource Marker target resource.
+     * @param model Block model.
+     */
+    private void createMissingBraceMarker(IResource resource, BlockModel model) {
+        try {
+            IMarker marker = resource.createMarker(PROBLEM_MARKER_KEY);
+            Map<String, Object> attribute = new HashMap<String, Object>();
+
+            attribute.put(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+            attribute.put(IMarker.MESSAGE, "Missing end brace.");
+            attribute.put(IMarker.LINE_NUMBER, model.getLineNumber());
+            attribute.put(IMarker.CHAR_START, model.getOffset());
+            attribute.put(IMarker.CHAR_END, model.getOffset() + model.getStartBrace().length());
+
+            marker.setAttributes(attribute);
+        } catch (CoreException e) {
+            // log.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Create marker of statement error.
+     * @param resource Marker target resource.
+     * @param lineNumber start line number.
+     * @param charStart marker start position.
+     * @param charEnd marker end position.
+     */
+    private void createStatementErrorMarker(IResource resource, int lineNumber, int charStart, int charEnd) {
+        try {
+            IMarker marker = resource.createMarker(PROBLEM_MARKER_KEY);
+            Map<String, Object> attribute = new HashMap<String, Object>();
+
+            attribute.put(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+            attribute.put(IMarker.MESSAGE, "Position of statement is invalid.");
+            attribute.put(IMarker.LINE_NUMBER, lineNumber);
+            attribute.put(IMarker.CHAR_START, charStart);
+            attribute.put(IMarker.CHAR_END, charEnd);
+
+            marker.setAttributes(attribute);
+        } catch (CoreException e) {
+            // log.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Create marker of duplicate Map Entry error.
+     * @param resource Marker target resource.
+     * @param model Map Entry model.
+     */
+    private void createDuplicateKeyMarker(IResource resource, MapEntryModel model) {
+        try {
+            IMarker marker = resource.createMarker(PROBLEM_MARKER_KEY);
+            Map<String, Object> attribute = new HashMap<String, Object>();
+
+            attribute.put(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+            attribute.put(IMarker.MESSAGE, "The value of the key " + model.getNameText() + " is duplicated.");
+            attribute.put(IMarker.LINE_NUMBER, model.getLineNumber());
+            attribute.put(IMarker.CHAR_START, model.getOffset());
+            attribute.put(IMarker.CHAR_END, model.getOffset() + model.getNameText().length());
+
+            marker.setAttributes(attribute);
+        } catch (CoreException e) {
+            // log.error(e.getMessage(), e);
         }
     }
 }
