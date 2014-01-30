@@ -22,6 +22,7 @@ public class LiteralValueModel extends DefaultModel {
     public LiteralValueModel() {
         super("LiteralValue");
     }
+
     public String getValue() {
         return _input;
     }

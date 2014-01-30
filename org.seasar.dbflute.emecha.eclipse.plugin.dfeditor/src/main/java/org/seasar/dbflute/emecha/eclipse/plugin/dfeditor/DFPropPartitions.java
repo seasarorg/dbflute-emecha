@@ -27,9 +27,4 @@ public interface DFPropPartitions {
     /** The identifier of the dfprop partitioning. */
     String DFP_PARTITIONING = "__dfp_partitioning";
 
-    String DFP_CHARACTER = "__dfp_character";
-
-    String DFP_STRING = "__dfp_string";
-
-    String DFP_TAG = "__dfp_tag";
 }

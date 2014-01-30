@@ -16,14 +16,38 @@
 package org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel;
 
 /**
- *
+ * DFProp model interface.
  */
 public interface DFPropModel {
 
+    /**
+     * Get parent model element.
+     * @return Parent element.
+     */
     DFPropModel getParent();
+
+    /**
+     * Get child model elements.
+     * @return Child elements.
+     */
     DFPropModel[] getChild();
+
+    /**
+     * Get offset.
+     * @return offset
+     */
     int getOffset();
-    int getEndPosition();
+
+    /**
+     * Get element length.
+     * @return element length.
+     */
     int getLength();
+
+    /**
+     * Get element start line number.
+     * @return line number.
+     */
+    int getLineNumber();
 
 }

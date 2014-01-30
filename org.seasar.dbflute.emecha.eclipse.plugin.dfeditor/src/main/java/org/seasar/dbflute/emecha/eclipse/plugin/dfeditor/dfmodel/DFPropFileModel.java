@@ -16,11 +16,13 @@
 package org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel;
 
 /**
- *
+ * DFProp file element model.
  */
 public class DFPropFileModel extends AbstractModel implements NamedModel {
 
     protected String _fileName;
+    protected int _length = 0;
+    protected boolean _missingHierarchy = false;
 
     public DFPropFileModel() {
         super("DFPropFile");
@@ -29,11 +31,31 @@ public class DFPropFileModel extends AbstractModel implements NamedModel {
     public void setFileName(String name) {
         _fileName = name;
     }
+
     /**
      * @see org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.NamedModel#getNameText()
      */
     public String getNameText() {
         return _fileName;
+    }
+
+    public void setLength(int length) {
+        _length = length;
+    }
+
+    /**
+     * @see org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.DFPropModel#getLength()
+     */
+    public int getLength() {
+        return _length;
+    }
+
+    public boolean isMissingHierarchy() {
+        return _missingHierarchy;
+    }
+
+    public void setMissingHierarchy(boolean status) {
+        _missingHierarchy = status;
     }
 
     @Override
@@ -47,6 +69,6 @@ public class DFPropFileModel extends AbstractModel implements NamedModel {
         }
         str.append(separator);
         str.append("[/").append(_stateName).append("]");
-        return  str.toString();
+        return str.toString();
     }
 }

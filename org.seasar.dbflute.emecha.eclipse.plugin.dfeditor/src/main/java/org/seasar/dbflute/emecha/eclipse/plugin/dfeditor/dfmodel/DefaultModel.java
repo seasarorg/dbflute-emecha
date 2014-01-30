@@ -21,15 +21,25 @@ package org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel;
  */
 public class DefaultModel extends AbstractModel {
 
+    protected String _input;
+
     public DefaultModel() {
         this("Default");
     }
+
     protected DefaultModel(String stateName) {
         super(stateName);
     }
+
     public void setInput(String input) {
         this._input = input;
     }
 
+    /**
+     * @see org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.DFPropModel#getLength()
+     */
+    public int getLength() {
+        return _input.length();
+    }
 
 }

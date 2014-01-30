@@ -16,7 +16,7 @@
 package org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel;
 
 /**
- *
+ * Block element model.
  */
 public class BlockModel extends AbstractModel implements FoldingModel {
 
@@ -25,6 +25,8 @@ public class BlockModel extends AbstractModel implements FoldingModel {
     protected String _startBrace = DEFAULT_START_BRACE;
     protected String _endBrace = DEFAULT_END_BRACE;
     protected int _length = 0;
+    protected int _lineFeedCount = 0;
+    protected boolean _missingEndBrace = false;
 
     protected BlockModel(String stateName) {
         super(stateName);
@@ -33,16 +35,11 @@ public class BlockModel extends AbstractModel implements FoldingModel {
     public void addLineCount() {
         _lineFeedCount++;
     }
-    /**
-     * @see org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.FoldingModel#getLineFeedCount()
-     */
-    public int getLineFeedCount() {
-        return _lineFeedCount;
-    }
 
     public void setLength(int length) {
         _length = length;
     }
+
     public boolean canFolding() {
         return _lineFeedCount > 0;
     }
@@ -63,6 +60,7 @@ public class BlockModel extends AbstractModel implements FoldingModel {
     public int getLength() {
         return _length;
     }
+
     /**
      * @see org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.FoldingModel#getFoldingLength()
      */
@@ -72,6 +70,7 @@ public class BlockModel extends AbstractModel implements FoldingModel {
         }
         return getLength();
     }
+
     public int getFoldingEnd() {
         if (!canFolding()) {
             throw new UnsupportedOperationException("Can not folding.");
@@ -82,14 +81,25 @@ public class BlockModel extends AbstractModel implements FoldingModel {
     public void setStartBrace(String startBrace) {
         _startBrace = startBrace;
     }
+
     public String getStartBrace() {
         return _startBrace;
     }
+
     public void setEndBrace(String endBrace) {
         _endBrace = endBrace;
     }
+
     public String getEndBrace() {
         return _endBrace;
+    }
+
+    public void setMissingEndBrace(boolean status) {
+        _missingEndBrace = status;
+    }
+
+    public boolean isMissingEndBrace() {
+        return _missingEndBrace;
     }
 
     @Override
@@ -105,7 +115,7 @@ public class BlockModel extends AbstractModel implements FoldingModel {
         str.append(separator);
         str.append(getEndBrace());
         str.append(getToStringSuffix());
-        return  str.toString();
+        return str.toString();
     }
 
 }

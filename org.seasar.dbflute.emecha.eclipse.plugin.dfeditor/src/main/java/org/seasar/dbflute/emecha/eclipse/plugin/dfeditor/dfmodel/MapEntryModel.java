@@ -33,22 +33,26 @@ public class MapEntryModel extends AbstractModel implements NamedModel {
     public MapEntryModel() {
         super("MapEntry");
     }
+
     public void setNameText(String name) {
         _propertyName = name;
     }
+
     public String getNameText() {
         return _propertyName;
     }
+
     public void setLength(int length) {
         _length = length;
     }
+
     /**
      * @see org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.DFPropModel#getLength()
      */
-    @Override
     public int getLength() {
         return _length;
     }
+
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
@@ -59,6 +63,6 @@ public class MapEntryModel extends AbstractModel implements NamedModel {
             str.append(child.toString());
         }
         str.append(getToStringSuffix());
-        return  str.toString();
+        return str.toString();
     }
 }

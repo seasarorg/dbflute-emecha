@@ -19,16 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * DFProp model base implementation.
  */
 public abstract class AbstractModel implements DFPropModel {
 
     protected final String _stateName;
     protected DFPropModel _parent;
-    protected List<DFPropModel> _child = new  ArrayList<DFPropModel>();
-    protected int _lineFeedCount = 0;
+    protected List<DFPropModel> _child = new ArrayList<DFPropModel>();
     protected int _offset = 0;
-    protected String _input;
+    protected int _lineNumber;
 
     protected AbstractModel(String stateName) {
         _stateName = stateName;
@@ -45,20 +44,17 @@ public abstract class AbstractModel implements DFPropModel {
         return _parent;
     }
 
-    protected List<DFPropModel> createChildList() {
-        return new ArrayList<DFPropModel>();
-    }
-
     public void addChild(AbstractModel child) {
         _child.add(child);
         child.setParent(this);
     }
+
     /**
      * @see org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.DFPropModel#getChild()
      */
     public DFPropModel[] getChild() {
         if (_child == null || _child.size() == 0) {
-            return new DFPropModel[]{};
+            return new DFPropModel[] {};
         }
         return _child.toArray(new DFPropModel[_child.size()]);
     }
@@ -66,11 +62,12 @@ public abstract class AbstractModel implements DFPropModel {
     public void setOffset(int offset) {
         _offset = offset;
     }
+
     /**
      * @see org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.DFPropModel#getOffset()
      */
     public int getOffset() {
-        return _offset ;
+        return _offset;
     }
 
     /**
@@ -80,18 +77,16 @@ public abstract class AbstractModel implements DFPropModel {
         return getOffset() + getLength();
     }
 
+    public void setLineNumber(int lineNumber) {
+        _lineNumber = lineNumber;
+    }
+
     /**
-     * @see org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.DFPropModel#getLength()
+     * @see org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.DFPropModel#getLineNumber()
      */
-    public int getLength() {
-        return _input.length();
+    public int getLineNumber() {
+        return _lineNumber;
     }
-
-    @Override
-    public String toString() {
-        return getToStringPrefix() + _input + getToStringSuffix();
-    }
-
 
     protected String getToStringPrefix() {
         return "[" + _stateName + ":" + getOffset() + "]";

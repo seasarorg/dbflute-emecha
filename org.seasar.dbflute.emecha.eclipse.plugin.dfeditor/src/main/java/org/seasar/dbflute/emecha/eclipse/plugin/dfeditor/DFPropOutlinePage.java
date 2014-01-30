@@ -43,9 +43,11 @@ public class DFPropOutlinePage extends ContentOutlinePage {
 
     private DFPropInput input = new DFPropInput();
     private DFPropEditor editor;
+
     private static class DFPropInput {
         DFPropModel dfmodel;
     }
+
     public DFPropOutlinePage(DFPropEditor dfPropEditor) {
         this.editor = dfPropEditor;
         this.input.dfmodel = dfPropEditor.getDFModel();
@@ -77,7 +79,7 @@ public class DFPropOutlinePage extends ContentOutlinePage {
     private ISelectionChangedListener getSelectionChangedListener() {
         return new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
-                Object firstElement = ((TreeSelection)event.getSelection()).getFirstElement();
+                Object firstElement = ((TreeSelection) event.getSelection()).getFirstElement();
                 if (firstElement instanceof DFPropFileModel) {
                     // nothing
                 } else if (firstElement instanceof MapModel) {
@@ -118,6 +120,7 @@ public class DFPropOutlinePage extends ContentOutlinePage {
                 }
                 return false;
             }
+
             private boolean hasLabelModel(DFPropModel element) {
                 DFPropModel[] child = element.getChild();
                 for (DFPropModel model : child) {
@@ -151,6 +154,7 @@ public class DFPropOutlinePage extends ContentOutlinePage {
                 }
                 return null;
             }
+
             private DFPropModel getParentLabelModel(DFPropModel element) {
                 if (element == null) {
                     return null;
@@ -173,10 +177,10 @@ public class DFPropOutlinePage extends ContentOutlinePage {
              */
             public Object[] getElements(Object inputElement) {
                 if (inputElement instanceof DFPropInput) {
-                    return new DFPropModel[]{((DFPropInput)inputElement).dfmodel};
+                    return new DFPropModel[] { ((DFPropInput) inputElement).dfmodel };
                 }
                 if (inputElement instanceof DFPropModel) {
-                    return new DFPropModel[]{(DFPropModel)inputElement};
+                    return new DFPropModel[] { (DFPropModel) inputElement };
                 }
                 return new Object[0];
             }
@@ -190,6 +194,7 @@ public class DFPropOutlinePage extends ContentOutlinePage {
                 }
                 return new Object[0];
             }
+
             private List<DFPropModel> getLabelChildren(DFPropModel element) {
                 List<DFPropModel> list = new ArrayList<DFPropModel>();
                 DFPropModel[] child = element.getChild();
@@ -233,6 +238,7 @@ public class DFPropOutlinePage extends ContentOutlinePage {
                 }
                 return null;
             }
+
             /**
              * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
              */

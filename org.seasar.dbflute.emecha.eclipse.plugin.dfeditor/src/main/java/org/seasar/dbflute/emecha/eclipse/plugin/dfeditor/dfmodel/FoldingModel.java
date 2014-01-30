@@ -16,13 +16,11 @@
 package org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel;
 
 /**
- *
+ * Folding model interface.
  */
 public interface FoldingModel {
     boolean canFolding();
     int getFoldingStart();
-    int getFoldingEnd();
     int getFoldingLength();
-    int getLineFeedCount();
 
 }

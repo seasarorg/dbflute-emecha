@@ -15,7 +15,6 @@
  */
 package org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel;
 
-
 /**
  * Multi line comment model.
  * <p>
@@ -30,32 +29,39 @@ public class MultiLineCommentModel extends DefaultModel implements FoldingModel 
     public MultiLineCommentModel() {
         super("MultiLineComment");
     }
-    /**
-     * @see org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.FoldingModel#getLineFeedCount()
-     */
-    public int getLineFeedCount() {
-        return _lineFeedCount;
-    }
+
     /**
      * @see org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.AbstractModel#addChild(org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.AbstractModel)
      */
     public void addChild(CommentModel child) {
         super.addChild(child);
-        _lineFeedCount++;
     }
+
+    /**
+     * Set element length.
+     * @param length element length.
+     */
     public void setLength(int length) {
         _length = length;
     }
+
     /**
      * @see org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.DFPropModel#getLength()
      */
     public int getLength() {
         return _length;
     }
+
+    /**
+     * {@inheritDoc}
+     * @see org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.FoldingModel#canFolding()
+     */
     public boolean canFolding() {
         return getChild().length > 1;
     }
+
     /**
+     * {@inheritDoc}
      * @see org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.FoldingModel#getFoldingStart()
      */
     public int getFoldingStart() {
@@ -64,22 +70,15 @@ public class MultiLineCommentModel extends DefaultModel implements FoldingModel 
         }
         return getOffset();
     }
+
     /**
-     * @see org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.FoldingModel#getFoldingEnd()
-     */
-    public int getFoldingEnd() {
-        if (!canFolding()) {
-            throw new UnsupportedOperationException("Can not folding.");
-        }
-        DFPropModel last = getChild()[getChild().length - 1];
-        return last.getEndPosition();
-    }
-    /**
+     * {@inheritDoc}
      * @see org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel.FoldingModel#getFoldingLength()
      */
     public int getFoldingLength() {
         return getLength();
     }
+
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
@@ -91,6 +90,6 @@ public class MultiLineCommentModel extends DefaultModel implements FoldingModel 
         }
         str.append(separator);
         str.append(getToStringSuffix());
-        return  str.toString();
+        return str.toString();
     }
 }

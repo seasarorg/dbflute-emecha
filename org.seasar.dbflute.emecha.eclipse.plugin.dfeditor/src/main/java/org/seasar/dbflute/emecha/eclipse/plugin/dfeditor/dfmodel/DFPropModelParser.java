@@ -15,6 +15,9 @@
  */
 package org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  *
  */
@@ -28,40 +31,42 @@ public class DFPropModelParser {
         ,SINGLE_QUATE
         ,DUBLE_QUATE
     }
+
     public DFPropFileModel parse(String source) {
         DFPropFileModel model = new DFPropFileModel();
         if (source == null || source.trim().length() == 0) {
             return model;
         }
+        int length = source.length();
+        model.setLength(length);
 
-        AbstractModel current = model;
+        DFPropModel current = model;
         int offset = 0;
         int indentOffset = 0;
+        int lineNumber = 1;
         State beforeState = State.INDENT;
         StringBuilder buffer = new StringBuilder();
         State state = State.INDENT;
-        int length = source.length();
+
         for (int index = 0; index < length; index++) {
             char c = source.charAt(index);
             switch (c) {
-            case '\r':
-            {
+            case '\r': {
                 char next = source.charAt((index + 1));
                 if (next == '\n') {
                     break;
                 }
                 // not break
             }
-            case '\n':
-            {
+            case '\n': {
                 if (State.INDENT.equals(state)) {
                     if (current instanceof MultiLineCommentModel) {
                         ((MultiLineCommentModel) current).setLength(offset - current.getOffset());
-                        current = (AbstractModel) current.getParent();
+                        current = current.getParent();
                     }
                     offset = index + 1;
                 } else if (State.COMMENT.equals(state)) {
-                    parseBuffer(current, buffer, offset, index);
+                    parseBuffer(current, buffer, offset, index, lineNumber);
                     beforeState = state;
                     state = State.INDENT;
                     buffer = new StringBuilder();
@@ -72,26 +77,27 @@ public class DFPropModelParser {
                     buffer = new StringBuilder();
                     offset = index + 1;
                 }
-                AbstractModel prevModel = current;
-                while(true) {
+                DFPropModel prevModel = current;
+                while (true) {
                     if (prevModel == null) {
                         break;
                     }
                     if (prevModel instanceof BlockModel) {
                         ((BlockModel) prevModel).addLineCount();
                     }
-                    prevModel = (AbstractModel) prevModel.getParent();
+                    prevModel = prevModel.getParent();
                 }
                 indentOffset = 0;
+                lineNumber++;
                 break;
             }
-            case '#' :
-            {
-                if (State.INDENT.equals(state) ) {
+            case '#': {
+                if (State.INDENT.equals(state)) {
                     if (!(current instanceof MultiLineCommentModel)) {
                         MultiLineCommentModel multiLineComment = new MultiLineCommentModel();
                         multiLineComment.setOffset(offset);
-                        current.addChild(multiLineComment);
+                        multiLineComment.setLineNumber(lineNumber);
+                        ((AbstractModel) current).addChild(multiLineComment);
                         current = multiLineComment;
                     }
                     buffer = new StringBuilder();
@@ -100,7 +106,7 @@ public class DFPropModelParser {
                     state = State.COMMENT;
                 }
                 if (State.DEFAULT.equals(state) || State.BLOCK_START.equals(state)) {
-                    parseBuffer(current, buffer, offset, index);
+                    parseBuffer(current, buffer, offset, index, lineNumber);
 
                     buffer = new StringBuilder();
                     offset = index;
@@ -110,7 +116,7 @@ public class DFPropModelParser {
                 buffer.append(c);
                 break;
             }
-            case '{' :
+            case '{':
                 buffer.append(c);
                 if (State.DEFAULT.equals(state)) {
                     BlockModel blockModel = null;
@@ -125,7 +131,8 @@ public class DFPropModelParser {
                         } else {
                             blockModel.setOffset(offset);
                         }
-                        current.addChild(blockModel);
+                        blockModel.setLineNumber(lineNumber);
+                        ((AbstractModel) current).addChild(blockModel);
                         current = blockModel;
                         buffer = new StringBuilder();
                         offset = index;
@@ -136,10 +143,11 @@ public class DFPropModelParser {
                 break;
             case '}' :
                 if (State.DEFAULT.equals(state) || State.INDENT.equals(state) || State.BLOCK_START.equals(state)) {
-                    parseBuffer(current, buffer, offset, index);
-                    AbstractModel prevModel = current;
-                    while(true) {
+                    parseBuffer(current, buffer, offset, index, lineNumber);
+                    DFPropModel prevModel = current;
+                    while (true) {
                         if (prevModel == null) {
+                            parseBuffer(current, new StringBuilder().append(c), index, index, lineNumber);
                             break;
                         }
                         if (prevModel instanceof BlockModel) {
@@ -152,13 +160,13 @@ public class DFPropModelParser {
                                 case '\t':
                                     appendLength++;
                                     continue;
-                                case '\r' :
+                                case '\r':
                                     char crNext = source.charAt(search + 1);
                                     if (crNext == '\n') {
                                         appendLength++;
                                         continue;
                                     }
-                                case '\n' :
+                                case '\n':
                                     appendLength++;
                                     break;
                                 default:
@@ -167,19 +175,21 @@ public class DFPropModelParser {
                                 break;
                             }
                             ((BlockModel) prevModel).setLength(index - prevOffset + appendLength); // 長さに判定対象文字を含める
-                            current = (AbstractModel) prevModel.getParent();
+                            current = prevModel.getParent();
                             break;
                         }
                         if (prevModel instanceof MultiLineCommentModel) {
                             ((MultiLineCommentModel) prevModel).setLength(offset - prevModel.getOffset());
+                            current = prevModel.getParent();
                         }
                         if (prevModel instanceof MapEntryModel) {
                             ((MapEntryModel) prevModel).setLength(index - prevModel.getOffset());
+                            current = prevModel.getParent();
                         }
-                        prevModel = (AbstractModel) prevModel.getParent();
+                        prevModel = prevModel.getParent();
                     }
                     buffer = new StringBuilder();
-                    offset = index;
+                    offset = index + 1;
                     beforeState = state;
                     state = State.BLOCK_START;
                 } else {
@@ -195,10 +205,11 @@ public class DFPropModelParser {
                     }
                 }
                 if (!skip && (State.DEFAULT.equals(state) || State.INDENT.equals(state) || State.BLOCK_START.equals(state))) {
-                    parseBuffer(current, buffer, offset, index);
-                    AbstractModel prevModel = current;
-                    while(true) {
+                    parseBuffer(current, buffer, offset, index, lineNumber);
+                    DFPropModel prevModel = current;
+                    while (true) {
                         if (prevModel == null) {
+                            parseBuffer(current, new StringBuilder().append(c), index, index, lineNumber);
                             break;
                         }
                         if (prevModel instanceof BlockModel) {
@@ -207,37 +218,39 @@ public class DFPropModelParser {
                         }
                         if (prevModel instanceof MultiLineCommentModel) {
                             ((MultiLineCommentModel) prevModel).setLength(offset - prevModel.getOffset());
+                            current = prevModel.getParent();
                         }
                         if (prevModel instanceof MapEntryModel) {
                             ((MapEntryModel) prevModel).setLength(index - prevModel.getOffset());
+                            current = prevModel.getParent();
                         }
-                        prevModel = (AbstractModel) prevModel.getParent();
+                        prevModel = prevModel.getParent();
                     }
                     buffer = new StringBuilder();
-                    offset = index;
+                    offset = index + 1;
                     beforeState = state;
                     state = State.BLOCK_START;
                 } else {
                     buffer.append(c);
                 }
                 break;
-            case '=' :
+            case '=':
                 if ((State.DEFAULT.equals(state)) && current instanceof MapModel) {
                     MapEntryModel entry = new MapEntryModel();
                     entry.setOffset(offset);
+                    entry.setLineNumber(lineNumber);
                     entry.setNameText(buffer.toString().trim());
-                    current.addChild(entry);
+                    ((AbstractModel) current).addChild(entry);
                     current = entry;
                     buffer = new StringBuilder();
-                    offset = index;
+                    offset = index + 1;
                     beforeState = state;
                     state = State.BLOCK_START;
                 } else {
                     buffer.append(c);
                 }
                 break;
-            case '\\':
-            {
+            case '\\': {
                 if (State.INDENT.equals(state)) {
                     if (buffer.length() > 0) {
                         buffer = new StringBuilder();
@@ -262,18 +275,19 @@ public class DFPropModelParser {
                 }
                 break;
             }
-            case ' ' : // not break;
+            case ' ': // not break;
             case '\t':
-                buffer.append(c);
                 if (State.INDENT.equals(state)) {
                     indentOffset++;
+                } else {
+                    buffer.append(c);
                 }
                 break;
             default:
                 if (State.INDENT.equals(state) || State.BLOCK_START.equals(state)) {
                     if (current instanceof MultiLineCommentModel) {
                         ((MultiLineCommentModel) current).setLength(offset - current.getOffset());
-                        current = (AbstractModel) current.getParent();
+                        current = current.getParent();
                     }
                     buffer = new StringBuilder();
                     offset = index;
@@ -284,35 +298,56 @@ public class DFPropModelParser {
                 break;
             }
         }
+
         if (buffer.length() > 0) {
-            parseBuffer(current, buffer, offset, length - 1);
+            parseBuffer(current, buffer, offset, length - 1, lineNumber);
         }
+
         if (current instanceof MultiLineCommentModel) {
             ((MultiLineCommentModel) current).setLength(length - current.getOffset());
-            current = (AbstractModel) current.getParent();
+            current = current.getParent();
+        }
+
+        if (!model.equals(current)) {
+            model.setMissingHierarchy(true);
+            while (current != null) {
+                if (current instanceof BlockModel) {
+                    ((BlockModel) current).setMissingEndBrace(true);
+                }
+                current = current.getParent();
+            }
         }
 
         return model;
     }
 
-    private void parseBuffer(AbstractModel current, StringBuilder buffer, int offset, int index) {
+    private void parseBuffer(DFPropModel current, StringBuilder buffer, int offset, int index, int lineNumber) {
         if (buffer.length() > 0 && buffer.charAt(0) == '#') {
             CommentModel comment = new CommentModel();
             comment.setOffset(offset);
+            comment.setLineNumber(lineNumber);
             comment.setInput(buffer.toString());
-            current.addChild(comment);
+            ((AbstractModel) current).addChild(comment);
             return;
         }
+
         if (buffer.toString().trim().length() > 0) {
             LiteralValueModel value = new LiteralValueModel();
-            value.setOffset(offset);
+            Pattern pattern = Pattern.compile("^([ \t]+)");
+            Matcher matcher = pattern.matcher(buffer.toString());
+            if (matcher.find()) {
+                value.setOffset(offset + matcher.group().length());
+            } else {
+                value.setOffset(offset);
+            }
+            value.setLineNumber(lineNumber);
             value.setInput(buffer.toString().trim());
-            current.addChild(value);
+            ((AbstractModel) current).addChild(value);
         }
+
         if (current instanceof MapEntryModel) {
             ((MapEntryModel) current).setLength(index - current.getOffset());
         }
     }
-
 
 }
