@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package frend.org.eclipse.jdt.internal.corext.util;
+package friend.org.eclipse.jdt.internal.corext.util;
 
 import java.lang.reflect.Array;
 import java.util.Collection;

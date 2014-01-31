@@ -24,7 +24,7 @@ import org.eclipse.jdt.ui.actions.SelectionDispatchAction;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 
-import frend.org.eclipse.jdt.internal.ui.javaeditor.JavaElementHyperlinkDetector;
+import friend.org.eclipse.jdt.internal.ui.javaeditor.JavaElementHyperlinkDetector;
 
 /**
  * @author schatten

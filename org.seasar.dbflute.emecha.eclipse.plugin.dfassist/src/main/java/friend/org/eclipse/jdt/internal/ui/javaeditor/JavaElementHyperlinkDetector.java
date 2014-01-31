@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package frend.org.eclipse.jdt.internal.ui.javaeditor;
+package friend.org.eclipse.jdt.internal.ui.javaeditor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ import org.eclipse.jdt.core.dom.ContinueStatement;
 import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
-import frend.org.eclipse.jdt.internal.corext.util.CollectionsUtil;
+import friend.org.eclipse.jdt.internal.corext.util.CollectionsUtil;
 import org.eclipse.jdt.ui.SharedASTProvider;
 import org.eclipse.jdt.ui.actions.SelectionDispatchAction;
 import org.eclipse.jdt.internal.ui.search.BreakContinueTargetFinder;
