@@ -143,7 +143,7 @@ public class SqlFileHyperlink implements IHyperlink {
 		}
 		String source = method.getSource();
 		String path = source.substring(source.indexOf('"') + 1, source.lastIndexOf('"')); //$NON-NLS-1$ //$NON-NLS-2$
-		if (path == null || path.isEmpty()) {
+		if (path == null || path.trim().length() == 0) {
 			return null;
 		}
 		String[] splitPath = path.split(":"); //$NON-NLS-1$
@@ -201,7 +201,7 @@ public class SqlFileHyperlink implements IHyperlink {
 	}
 
 	private boolean isSqlFileName(String typeQualifiedName, String fileName) {
-		if (fileName == null || fileName.isEmpty()) return false;
+		if (fileName == null || fileName.trim().length() == 0) return false;
 		if (!fileName.endsWith(".sql")) return false; //$NON-NLS-1$
 		if (fileName.endsWith((typeQualifiedName + ".sql"))) return true; //$NON-NLS-1$
 		return fileName.endsWith( String.valueOf(typeQualifiedName.charAt(0)).toLowerCase() + typeQualifiedName.substring(1) + ".sql"); //$NON-NLS-1$

@@ -24,8 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -50,7 +52,7 @@ public class NewConcreteClassWizardPage extends NewClassWizardPage {
 		super.createControl(parent);
 		String pkgName = getPackageFragment().getElementName();
 		String implPackageName = pkgName;
-		if (implPackageName == null || implPackageName.isEmpty()) {
+		if (implPackageName == null || implPackageName.trim().length() == 0) {
 		    implPackageName = "impl";
 	    } else if (!implPackageName.endsWith(".impl")) {
 		    implPackageName = pkgName + ".impl";
@@ -99,7 +101,7 @@ public class NewConcreteClassWizardPage extends NewClassWizardPage {
 	 * @throws IOException
 	 */
 	protected boolean isInterface(IFile file) throws CoreException, IOException {
-		ASTParser parser = ASTParser.newParser(AST.JLS4);
+		ASTParser parser = ASTParser.newParser(getAstLevel(file));
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setSource(this.getSourceString(file).toCharArray());
 		CompilationUnit unit = (CompilationUnit) parser.createAST(null);
@@ -107,6 +109,25 @@ public class NewConcreteClassWizardPage extends NewClassWizardPage {
 		return type.isInterface();
 
 	}
+
+    /**
+     * ソース解析レベルを取得する。
+     * @param file 対象のファイル
+     * @return AST API Level
+     * @see org.eclipse.jdt.core.dom.AST
+     */
+    private int getAstLevel(IFile file) {
+        IProject project = file.getProject();
+        IJavaProject javaProject = JavaCore.create(project);
+        String option = javaProject.getOption(JavaCore.COMPILER_COMPLIANCE, true);
+
+        if ("1.7".equals(option)) {
+            // Java 7 compliance level.
+            return 4; // AST.JLS4;
+        }
+        // Default return is Java 5 compliance level.
+        return 3; //AST.JLS3;
+    }
 
 	/**
 	 * 対象のファイルの内容を取得する。

@@ -10,7 +10,9 @@
  *******************************************************************************/
 package friend.org.eclipse.jdt.internal.ui.javaeditor;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.jface.action.IAction;
@@ -34,7 +36,6 @@ import org.eclipse.jdt.core.dom.ContinueStatement;
 import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
-import friend.org.eclipse.jdt.internal.corext.util.CollectionsUtil;
 import org.eclipse.jdt.ui.SharedASTProvider;
 import org.eclipse.jdt.ui.actions.SelectionDispatchAction;
 import org.eclipse.jdt.internal.ui.search.BreakContinueTargetFinder;
@@ -71,11 +72,11 @@ public class JavaElementHyperlinkDetector extends AbstractHyperlinkDetector {
 
         int offset= region.getOffset();
 
-        ITypeRoot input= EditorUtility.getEditorInputJavaElement(textEditor, false);
-        if (input == null)
-            return null;
-
         try {
+            ITypeRoot input= EditorUtility.getEditorInputJavaElement(textEditor, false);
+            if (input == null)
+                return null;
+
             IDocumentProvider documentProvider= textEditor.getDocumentProvider();
             IEditorInput editorInput= textEditor.getEditorInput();
             IDocument document= documentProvider.getDocument(editorInput);
@@ -114,6 +115,9 @@ public class JavaElementHyperlinkDetector extends AbstractHyperlinkDetector {
             return CollectionsUtil.toArray(links, IHyperlink.class);
 
         } catch (JavaModelException e) {
+            return null;
+        } catch (NoSuchMethodError e) {
+            // Eclipseの古いバージョンに対応。
             return null;
         }
     }
@@ -225,6 +229,60 @@ public class JavaElementHyperlinkDetector extends AbstractHyperlinkDetector {
                 return locations[0]; // points to the beginning of target statement
             }
         }
+        return null;
+    }
+
+}
+
+/**
+ * @see org.eclipse.jdt.internal.corext.util.CollectionsUtil
+ */
+@SuppressWarnings("restriction")
+class CollectionsUtil {
+    /**
+     * Returns an array containing all of the elements in the given collection. This is a
+     * compile-time type-safe alternative to {@link Collection#toArray(Object[])}.
+     *
+     * @param collection the source collection
+     * @param clazz the type of the array elements
+     * @param <A> the type of the array elements
+     * @return an array of type <code>A</code> containing all of the elements in the given
+     *         collection
+     *
+     * @throws NullPointerException if the specified collection or class is null
+     *
+     * @see <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7023484">Sun bug 7023484</a>
+     */
+    public static <A> A[] toArray(Collection<? extends A> collection, Class<A> clazz) {
+        Object array= Array.newInstance(clazz, collection.size());
+        @SuppressWarnings("unchecked")
+        A[] typedArray= collection.toArray((A[]) array);
+        return typedArray;
+    }
+}
+
+/**
+ * @since 3.4
+ * @see org.eclipse.jdt.internal.ui.javaeditor.EditorUtility
+ */
+@SuppressWarnings("restriction")
+class EditorUtility {
+    public static ITypeRoot getEditorInputJavaElement(org.eclipse.ui.IEditorPart editor, boolean primaryOnly) {
+        org.eclipse.core.runtime.Assert.isNotNull(editor);
+        return getEditorInputJavaElement(editor.getEditorInput(), primaryOnly);
+    }
+    private static ITypeRoot getEditorInputJavaElement(IEditorInput editorInput, boolean primaryOnly) {
+        if (editorInput == null)
+            return null;
+
+        org.eclipse.jdt.core.ICompilationUnit cu= org.eclipse.jdt.internal.ui.JavaPlugin.getDefault().getWorkingCopyManager().getWorkingCopy(editorInput, primaryOnly);
+        if (cu != null)
+            return cu;
+
+        IJavaElement je= (IJavaElement)editorInput.getAdapter(IJavaElement.class);
+        if (je instanceof ITypeRoot)
+            return (ITypeRoot)je;
+
         return null;
     }
 }
