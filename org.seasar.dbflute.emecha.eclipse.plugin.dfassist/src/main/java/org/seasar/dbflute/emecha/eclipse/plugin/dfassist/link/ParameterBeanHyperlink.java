@@ -27,76 +27,73 @@ import org.seasar.dbflute.emecha.eclipse.plugin.dfassist.DfAssistPlugin;
 import org.seasar.dbflute.emecha.eclipse.plugin.dfassist.nls.Messages;
 
 /**
+ * Hyperlink to ParameterBean.
  * @author schatten
- *
  */
 public class ParameterBeanHyperlink implements IHyperlink {
-	private final IRegion fRegion;
-	private final SelectionDispatchAction fOpenAction;
-	private final IType fElement;
-	@SuppressWarnings("unused")
-	private final boolean fQualify;
-	private IType pmbType = null;
+    private final IRegion fRegion;
+    private final SelectionDispatchAction fOpenAction;
+    private final IType fElement;
+    @SuppressWarnings("unused")
+    private final boolean fQualify;
+    private IType pmbType = null;
 
-	public ParameterBeanHyperlink(IRegion region,
-			SelectionDispatchAction openAction, IType element,
-			boolean qualify) {
-		Assert.isNotNull(openAction);
-		Assert.isNotNull(region);
+    public ParameterBeanHyperlink(IRegion region, SelectionDispatchAction openAction, IType element, boolean qualify) {
+        Assert.isNotNull(openAction);
+        Assert.isNotNull(region);
 
-		fRegion= region;
-		fOpenAction= openAction;
-		fElement= element;
-		fQualify= qualify;
-		try {
-			pmbType = getPmbClassType();
-		} catch (JavaModelException e) {
-			// TODO 自動生成された catch ブロック
-		    DfAssistPlugin.log(e);
-		}
-	}
+        fRegion = region;
+        fOpenAction = openAction;
+        fElement = element;
+        fQualify = qualify;
+        try {
+            pmbType = getPmbClassType();
+        } catch (JavaModelException e) {
+            DfAssistPlugin.log(e);
+        }
+    }
 
-	public IRegion getHyperlinkRegion() {
-		return fRegion;
-	}
+    public IRegion getHyperlinkRegion() {
+        return fRegion;
+    }
 
-	public String getTypeLabel() {
-		return null;
-	}
+    public String getTypeLabel() {
+        return null;
+    }
 
-	public String getHyperlinkText() {
-		return Messages.HYPERLINK_PARAMETER_BEAN;
-	}
+    public String getHyperlinkText() {
+        return Messages.HYPERLINK_PARAMETER_BEAN;
+    }
 
-	public void open() {
-		if (existPmbType()) {
-			fOpenAction.run(new StructuredSelection(pmbType));
-		}
-	}
+    public void open() {
+        if (existPmbType()) {
+            fOpenAction.run(new StructuredSelection(pmbType));
+        }
+    }
 
-	/**
-	 * ParameterBeanが存在するか判定する。
-	 * @return 対になるParameterBeanが存在する場合に<code>true</code>
-	 */
-	public boolean existPmbType() {
-		return pmbType != null && pmbType.exists();
-	}
+    /**
+     * ParameterBeanが存在するか判定する。
+     * @return 対になるParameterBeanが存在する場合に<code>true</code>
+     */
+    public boolean existPmbType() {
+        return pmbType != null && pmbType.exists();
+    }
 
-	private IType getPmbClassType() throws JavaModelException {
-		String packageName = fElement.getPackageFragment().getElementName();
-		String typeQualifiedName = fElement.getTypeQualifiedName();
-		if (packageName.endsWith(".exentity.customize")){
-			packageName = packageName.substring(0, packageName.indexOf(".exentity.customize")) + ".exbhv.pmbean";
-		}
-		if (packageName.endsWith(".bsentity.customize")){
-			packageName = packageName.substring(0, packageName.indexOf(".bsentity.customize")) + ".exbhv.pmbean";
-			if (typeQualifiedName.startsWith("Bs")) {
-				typeQualifiedName = typeQualifiedName.substring("Bs".length());
-			}
-		}
-		typeQualifiedName = typeQualifiedName + "Pmb";
-		IType findType = fElement.getJavaProject().findType(packageName, typeQualifiedName,(IProgressMonitor)null);
-		return findType;
-	}
+    private IType getPmbClassType() throws JavaModelException {
+        String packageName = fElement.getPackageFragment().getElementName();
+        String typeQualifiedName = fElement.getTypeQualifiedName();
+        if (packageName.endsWith(".exentity.customize")) {
+            packageName = packageName.substring(0, packageName.indexOf(".exentity.customize")) + ".exbhv.pmbean";
+        }
+        if (packageName.endsWith(".bsentity.customize")) {
+            packageName = packageName.substring(0, packageName.indexOf(".bsentity.customize")) + ".exbhv.pmbean";
+            if (typeQualifiedName.startsWith("Bs")) {
+                typeQualifiedName = typeQualifiedName.substring("Bs".length());
+            }
+        }
+        typeQualifiedName = typeQualifiedName + "Pmb";
+        IType findType = fElement.getJavaProject().findType(packageName, typeQualifiedName, (IProgressMonitor) null);
+        return findType;
+    }
 
 }

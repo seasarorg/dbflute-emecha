@@ -17,6 +17,7 @@ package org.seasar.dbflute.emecha.eclipse.plugin.dfassist.link;
 
 import java.util.List;
 
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
@@ -27,8 +28,8 @@ import org.eclipse.jface.text.hyperlink.IHyperlink;
 import friend.org.eclipse.jdt.internal.ui.javaeditor.JavaElementHyperlinkDetector;
 
 /**
- * @author schatten
  *
+ * @author schatten
  */
 @SuppressWarnings("restriction")
 public class OutsideSqlHyperlinkDetector extends JavaElementHyperlinkDetector {
@@ -36,7 +37,9 @@ public class OutsideSqlHyperlinkDetector extends JavaElementHyperlinkDetector {
      * @see org.eclipse.jdt.internal.ui.javaeditor.JavaElementHyperlinkDetector#addHyperlinks(org.eclipse.jface.text.IRegion, org.eclipse.jdt.ui.actions.SelectionDispatchAction, org.eclipse.jdt.core.IJavaElement, boolean, org.eclipse.ui.texteditor.ITextEditor)
      */
     @Override
-    protected void addHyperlinks(List<IHyperlink> hyperlinksCollector, IRegion wordRegion, SelectionDispatchAction openAction, IJavaElement element, boolean qualify, JavaEditor editor) {
+    protected void addHyperlinks(List<IHyperlink> hyperlinksCollector, IRegion wordRegion,
+            SelectionDispatchAction openAction, IJavaElement element, boolean qualify, JavaEditor editor) {
+
         if (element instanceof IType) {
             String packageName = ((IType) element).getPackageFragment().getElementName();
             if (packageName.endsWith(".exbhv.pmbean") || packageName.endsWith(".bsbhv.pmbean")) {
@@ -56,6 +59,14 @@ public class OutsideSqlHyperlinkDetector extends JavaElementHyperlinkDetector {
                 ParameterBeanHyperlink pmbLink = new ParameterBeanHyperlink(wordRegion, openAction, (IType) element, qualify);
                 if (pmbLink.existPmbType()) {
                     hyperlinksCollector.add(pmbLink);
+                }
+            }
+
+        } else if (element instanceof IField) {
+            if (element.getElementName().startsWith("PATH_")) {
+                SqlFileHyperlink sqlLink = new SqlFileHyperlink(wordRegion, openAction, (IField) element, qualify);
+                if (sqlLink.existSqlFile()) {
+                    hyperlinksCollector.add(sqlLink);
                 }
             }
         }

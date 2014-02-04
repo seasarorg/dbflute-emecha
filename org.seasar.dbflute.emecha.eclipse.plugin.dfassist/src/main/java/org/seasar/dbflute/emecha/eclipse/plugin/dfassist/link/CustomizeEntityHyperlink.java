@@ -27,78 +27,74 @@ import org.seasar.dbflute.emecha.eclipse.plugin.dfassist.DfAssistPlugin;
 import org.seasar.dbflute.emecha.eclipse.plugin.dfassist.nls.Messages;
 
 /**
+ * Hyperlink to CustomizeEntity.
  * @author schatten
- *
  */
 public class CustomizeEntityHyperlink implements IHyperlink {
-	private final IRegion fRegion;
-	private final SelectionDispatchAction fOpenAction;
-	private final IType fElement;
-	@SuppressWarnings("unused")
-	private final boolean fQualify;
-	private IType entityType = null;
+    private final IRegion fRegion;
+    private final SelectionDispatchAction fOpenAction;
+    private final IType fElement;
+    @SuppressWarnings("unused")
+    private final boolean fQualify;
+    private IType entityType = null;
 
-	public CustomizeEntityHyperlink(IRegion region,
-			SelectionDispatchAction openAction, IType element,
-			boolean qualify) {
-		Assert.isNotNull(openAction);
-		Assert.isNotNull(region);
+    public CustomizeEntityHyperlink(IRegion region, SelectionDispatchAction openAction, IType element, boolean qualify) {
+        Assert.isNotNull(openAction);
+        Assert.isNotNull(region);
 
-		fRegion= region;
-		fOpenAction= openAction;
-		fElement= element;
-		fQualify= qualify;
-		try {
-			entityType = getEntityClassType();
-		} catch (JavaModelException e) {
-			// TODO 自動生成された catch ブロック
-		    DfAssistPlugin.log(e);
-		}
-	}
+        fRegion = region;
+        fOpenAction = openAction;
+        fElement = element;
+        fQualify = qualify;
+        try {
+            entityType = getEntityClassType();
+        } catch (JavaModelException e) {
+            DfAssistPlugin.log(e);
+        }
+    }
 
-	public IRegion getHyperlinkRegion() {
-		return fRegion;
-	}
+    public IRegion getHyperlinkRegion() {
+        return fRegion;
+    }
 
-	public String getTypeLabel() {
-		return null;
-	}
+    public String getTypeLabel() {
+        return null;
+    }
 
-	public String getHyperlinkText() {
-		return Messages.HYPERLINK_CUSTOMIZE_ENTITY;
-	}
+    public String getHyperlinkText() {
+        return Messages.HYPERLINK_CUSTOMIZE_ENTITY;
+    }
 
+    public void open() {
+        if (existEntityType()) {
+            fOpenAction.run(new StructuredSelection(entityType));
+        }
+    }
 
-	public void open() {
-		if (existEntityType()) {
-			fOpenAction.run(new StructuredSelection(entityType));
-		}
-	}
+    /**
+     * CustomizeEntityが存在するか判定する。
+     * @return 対になるCustomizeEntityが存在する場合に<code>true</code>
+     */
+    public boolean existEntityType() {
+        return entityType != null && entityType.exists();
+    }
 
-	/**
-	 * CustomizeEntityが存在するか判定する。
-	 * @return 対になるCustomizeEntityが存在する場合に<code>true</code>
-	 */
-	public boolean existEntityType() {
-		return entityType != null && entityType.exists();
-	}
-
-	private IType getEntityClassType() throws JavaModelException {
-		String packageName = fElement.getPackageFragment().getElementName();
-		String typeQualifiedName = fElement.getTypeQualifiedName();
-		if (packageName.endsWith(".exbhv.pmbean")){
-			packageName = packageName.substring(0, packageName.indexOf(".exbhv.pmbean")) + ".exentity.customize";
-		}
-		if (packageName.endsWith(".bsbhv.pmbean")){
-			packageName = packageName.substring(0, packageName.indexOf(".bsbhv.pmbean")) + ".exentity.customize";
-			if (typeQualifiedName.startsWith("Bs")) {
-				typeQualifiedName = typeQualifiedName.substring("Bs".length());
-			}
-		}
-		if (typeQualifiedName.endsWith("Pmb")) {
-			typeQualifiedName = typeQualifiedName.substring(0, typeQualifiedName.indexOf("Pmb"));
-		}
-		return fElement.getJavaProject().findType(packageName, typeQualifiedName,(IProgressMonitor)null);
-	}
+    private IType getEntityClassType() throws JavaModelException {
+        String packageName = fElement.getPackageFragment().getElementName();
+        String typeQualifiedName = fElement.getTypeQualifiedName();
+        if (packageName.endsWith(".exbhv.pmbean")) {
+            packageName = packageName.substring(0, packageName.indexOf(".exbhv.pmbean")) + ".exentity.customize";
+        }
+        if (packageName.endsWith(".bsbhv.pmbean")) {
+            packageName = packageName.substring(0, packageName.indexOf(".bsbhv.pmbean")) + ".exentity.customize";
+            if (typeQualifiedName.startsWith("Bs")) {
+                typeQualifiedName = typeQualifiedName.substring("Bs".length());
+            }
+        }
+        if (typeQualifiedName.endsWith("Pmb")) {
+            typeQualifiedName = typeQualifiedName.substring(0, typeQualifiedName.indexOf("Pmb"));
+        }
+        return fElement.getJavaProject().findType(packageName, typeQualifiedName, (IProgressMonitor) null);
+    }
 
 }
