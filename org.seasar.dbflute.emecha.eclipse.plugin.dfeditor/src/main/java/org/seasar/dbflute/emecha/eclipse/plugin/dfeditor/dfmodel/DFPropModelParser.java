@@ -68,15 +68,14 @@ public class DFPropModelParser {
                 } else if (State.COMMENT.equals(state)) {
                     parseBuffer(current, buffer, offset, index, lineNumber);
                     beforeState = state;
-                    state = State.INDENT;
                     buffer = new StringBuilder();
                     offset = index + 1;
                 } else if (buffer.toString().trim().length() == 0) {
                     beforeState = state;
-                    state = State.INDENT;
                     buffer = new StringBuilder();
                     offset = index + 1;
                 }
+                state = State.INDENT;
                 DFPropModel prevModel = current;
                 while (true) {
                     if (prevModel == null) {
@@ -94,6 +93,7 @@ public class DFPropModelParser {
             case '#': {
                 if (State.INDENT.equals(state)) {
                     if (!(current instanceof MultiLineCommentModel)) {
+                        parseBuffer(current, buffer, offset, index, lineNumber);
                         MultiLineCommentModel multiLineComment = new MultiLineCommentModel();
                         multiLineComment.setOffset(offset);
                         multiLineComment.setLineNumber(lineNumber);
