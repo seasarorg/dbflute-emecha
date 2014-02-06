@@ -23,6 +23,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.dbflute.emecha.synchronizer.handler.RefreshHandler;
 import org.dbflute.emecha.synchronizer.preferences.PreferenceConstants;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -45,6 +47,7 @@ public class EMSynchronizer extends AbstractUIPlugin implements IStartup {
 
     private ExecutorService threadPool;
 
+    private int port;
     /**
      * The constructor
      */
@@ -58,6 +61,7 @@ public class EMSynchronizer extends AbstractUIPlugin implements IStartup {
     @Override
     public void earlyStartup() {
         // Startup plugin with Server
+        serverStart();
     }
 
     /*
@@ -68,7 +72,6 @@ public class EMSynchronizer extends AbstractUIPlugin implements IStartup {
     public void start(BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
-        serverStart();
     }
 
     /*
@@ -82,15 +85,22 @@ public class EMSynchronizer extends AbstractUIPlugin implements IStartup {
         super.stop(context);
     }
 
-    public void serverStart() throws IOException {
-        int port = plugin.getPreferenceStore().getInt(PreferenceConstants.P_LISTEN_PORT);
-        String hostname = "localhost";
-        server = HttpServer.create(new InetSocketAddress(hostname, port), 0);
-        threadPool = Executors.newFixedThreadPool(1);
-        server.setExecutor(threadPool);
-        server.createContext("/", new RefreshHandler());
-        server.createContext("/refresh", new RefreshHandler());
-        server.start();
+    public void serverStart() {
+        try {
+            plugin.port = plugin.getPreferenceStore().getInt(PreferenceConstants.P_LISTEN_PORT);
+            String hostname = "localhost";
+            HttpServer server = HttpServer.create(new InetSocketAddress(hostname, port), 0);
+            threadPool = Executors.newFixedThreadPool(1);
+            server.setExecutor(threadPool);
+            server.createContext("/", new RefreshHandler());
+            server.createContext("/refresh", new RefreshHandler());
+            server.start();
+            getLog().log(new Status(IStatus.INFO, PLUGIN_ID, "Synchronizer server is started at port"+ port +"."));
+            this.server = server;
+        } catch (IOException e) {
+            getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, "Synchronizer server is not started by error. (Port:" + port + ")", e));
+            server = null;
+        }
     }
 
     public void serverStop() throws InterruptedException {
@@ -99,8 +109,24 @@ public class EMSynchronizer extends AbstractUIPlugin implements IStartup {
         }
         if (threadPool != null && !threadPool.isShutdown()) {
             threadPool.shutdownNow();
+            threadPool.awaitTermination(60, TimeUnit.SECONDS);
         }
-        threadPool.awaitTermination(60, TimeUnit.SECONDS);
+        threadPool = null;
+        server = null;
+    }
+
+    public static void serverRestart() {
+        EMSynchronizer synchronizer = getDefault();
+        try {
+            synchronizer.serverStop();
+            synchronizer.serverStart();
+        } catch (InterruptedException e) {
+            synchronizer.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, "Synchronizer server stop error.", e));
+        }
+    }
+
+    public static int getServerPort() {
+        return plugin.port;
     }
 
     /**

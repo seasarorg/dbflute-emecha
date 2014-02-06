@@ -44,16 +44,26 @@ public class EMSynchronizerPreferencePage extends FieldEditorPreferencePage impl
      */
     public void createFieldEditors() {
         portEditor = new IntegerFieldEditor(PreferenceConstants.P_LISTEN_PORT, "&Port", getFieldEditorParent()); //$NON-NLS-1$
+        portEditor.setEmptyStringAllowed(false);
         addField(portEditor);
 
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
      */
     public void init(IWorkbench workbench) {
     }
 
+    @Override
+    protected void performApply() {
+        super.performApply();
+        int newValue = portEditor.getIntValue();
+        int serverPort = EMSynchronizer.getServerPort();
+        if (serverPort != newValue) {
+            EMSynchronizer.serverRestart();
+        }
+    }
 }
