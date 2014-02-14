@@ -9,4 +9,122 @@
             name="DfAssistFixProcessor">
       </quickFixProcessor>
    </extension>
+
+  <extension point="org.eclipse.ui.newWizards">
+    <wizard id="org.dbflute.emecha.assist.newConcreteWizard"
+            name="%newConcreteWizard.name"
+            category="org.eclipse.jdt.ui.java"
+            class="org.seasar.dbflute.emecha.eclipse.plugin.dfassist.wizard.NewConcreteClassWizard"
+            icon="icons/newclass_wiz.gif">
+      <description>Create a new Concrete Class</description>
+      <selection class="org.eclipse.core.resources.IFile"/>
+      <selection class="org.eclipse.jdt.core.IJavaElement"/>
+    </wizard>
+  </extension>
+
+  <extension
+        point="org.eclipse.ui.commands">
+    <category
+          name="EMecha"
+          id="org.dbflute.emecha.category">
+    </category>
+    <command
+          name="%newConcreteCommand.name"
+          categoryId="org.dbflute.emecha.category"
+          defaultHandler="org.seasar.dbflute.emecha.eclipse.plugin.dfassist.command.NewConcreteWizardCommand"
+          id="org.dbflute.emecha.assist.newConcreteActionCommand">
+    </command>
+  </extension>
+
+  <extension
+        point="org.eclipse.ui.menus">
+     <menuContribution
+           locationURI="popup:org.eclipse.jdt.ui.source.menu?after=generateGroup">
+         <command
+               label="%newConcreteCommand.label"
+               id="org.dbflute.emecha.assist.newConcreteCommand"
+               commandId="org.dbflute.emecha.assist.newConcreteActionCommand">
+           <visibleWhen checkEnabled="false">
+             <or>
+               <with variable="activeMenuSelection">
+                 <reference definitionId="org.dbflute.emecha.command.difinition.newConcrete"/>
+               </with>
+               <with variable="activeMenuEditorInput">
+                 <reference definitionId="org.dbflute.emecha.command.difinition.newConcrete"/>
+               </with>
+             </or>
+           </visibleWhen>
+         </command>
+     </menuContribution>
+  </extension>
+
+  <extension
+        point="org.eclipse.core.expressions.definitions">
+    <definition
+          id="org.dbflute.emecha.command.difinition.newConcrete">
+      <iterate ifEmpty="false">
+        <or>
+          <adapt type="org.eclipse.core.resources.IFile">
+            <test property="org.eclipse.core.resources.name" value="*.java"/>
+            <test property="org.eclipse.core.resources.projectNature" value="org.eclipse.jdt.core.javanature"/>
+          </adapt>
+          <adapt type="org.eclipse.jdt.core.IJavaElement">
+              <instanceof value="org.eclipse.jdt.core.ICompilationUnit"/>
+          </adapt>
+        </or>
+      </iterate>
+    </definition>
+  </extension>
+
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      <hyperlinkDetector
+            activate="true"
+            class="org.seasar.dbflute.emecha.eclipse.plugin.dfassist.link.OutsideSqlHyperlinkDetector"
+            id="org.dbflute.emecha.assist.outsideSqlHyperlink"
+            name="OutsideSQL Link"
+            targetId="org.eclipse.jdt.ui.javaCode">
+      </hyperlinkDetector>
+   </extension>
+
+  <extension point="org.eclipse.ui.popupMenus">
+    <objectContribution
+          adaptable="true"
+          id="org.dbflute.emecha.assist.sqlObjectContribution"
+          nameFilter="*.sql"
+          objectClass="org.eclipse.core.resources.IFile">
+      <menu
+            id="org.seasar.dbflute.emecha.eclipse.plugin.menu"
+            label="EMecha"
+            path="additions">
+        <groupMarker name="additions2"/>
+      </menu>
+      <visibility>
+        <and>
+          <objectState
+                name="projectNature"
+                value="org.eclipse.jdt.core.javanature">
+          </objectState>
+          <objectState
+                name="path"
+                value="*/exbhv/*">
+          </objectState>
+        </and>
+      </visibility>
+      <action
+            id="org.dbflute.emecha.assist.OpenCustomizeEntityAction"
+            class="org.seasar.dbflute.emecha.eclipse.plugin.dfassist.action.OpenCustomizeEntityAction"
+            menubarPath="org.seasar.dbflute.emecha.eclipse.plugin.menu/additions2"
+            enablesFor="1"
+            label="%openCustomizeEntity.label">
+      </action>
+      <action
+            id="org.dbflute.emecha.assist.OpenParameterBeanAction"
+            class="org.seasar.dbflute.emecha.eclipse.plugin.dfassist.action.OpenParameterBeanAction"
+            menubarPath="org.seasar.dbflute.emecha.eclipse.plugin.menu/additions2"
+            enablesFor="1"
+            label="%openParameterBean.label">
+      </action>
+    </objectContribution>
+  </extension>
 </plugin>

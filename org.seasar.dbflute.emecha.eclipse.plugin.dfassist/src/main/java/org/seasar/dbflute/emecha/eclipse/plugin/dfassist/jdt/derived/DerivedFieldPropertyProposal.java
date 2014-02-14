@@ -1,5 +1,17 @@
 /*
+ * Copyright 2013 the Seasar Foundation and the Others.
  *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
  */
 package org.seasar.dbflute.emecha.eclipse.plugin.dfassist.jdt.derived;
 
@@ -27,6 +39,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.seasar.dbflute.emecha.eclipse.plugin.dfassist.DfAssistPlugin;
+import org.seasar.dbflute.emecha.eclipse.plugin.dfassist.nls.Messages;
 
 /**
  * DerivedReferrer用の定数・変数・Getter/Setterの作成をアシストするプロポーサル。
@@ -34,7 +47,7 @@ import org.seasar.dbflute.emecha.eclipse.plugin.dfassist.DfAssistPlugin;
  */
 public class DerivedFieldPropertyProposal implements IJavaCompletionProposal {
 
-    private static final String LINE_SEPARATER = System.getProperty("line.separator", "\n");
+    private static final String LINE_SEPARATER = System.getProperty("line.separator", "\n"); //$NON-NLS-1$ //$NON-NLS-2$
     private IInvocationContext _context;
     private int _addRelevance = 0;
 
@@ -78,7 +91,7 @@ public class DerivedFieldPropertyProposal implements IJavaCompletionProposal {
             IEditorPart editor = JavaUI.openInEditor(findType,true,false);
             // 対象クラスにメソッドを追加
             String importTypeName = this._fieldInfo.getPropertyTypeFullPackageName();
-            if (!importTypeName.startsWith("java.lang")) {
+            if (!importTypeName.startsWith("java.lang")) { //$NON-NLS-1$
                 findType.getCompilationUnit().createImport(importTypeName, null, Flags.AccDefault, null);
             }
             findType.createField(_fieldInfo.getConstantFieldSource(), null, true, null);
@@ -93,9 +106,9 @@ public class DerivedFieldPropertyProposal implements IJavaCompletionProposal {
                 ateditor.selectAndReveal(propertyFieldSourceRange.getOffset() + 10, 0);
             }
         } catch (JavaModelException e) {
-            DfAssistPlugin.log("Editor open error.", e);
+            DfAssistPlugin.log("Editor open error.", e); //$NON-NLS-1$
         } catch (PartInitException e) {
-            DfAssistPlugin.log("Editor open error.", e);
+            DfAssistPlugin.log("Editor open error.", e); //$NON-NLS-1$
         }
     }
 
@@ -117,7 +130,7 @@ public class DerivedFieldPropertyProposal implements IJavaCompletionProposal {
             } else {
                 Name name = imp.getName();
                 String packageName = name.getFullyQualifiedName();
-                String[] split = packageName.split("\\.");
+                String[] split = packageName.split("\\."); //$NON-NLS-1$
                 String splitName = split.length > 1 ? split[split.length -1] : split[0];
                 if (splitName.equals(typeName)) {
                     typeName = packageName;
@@ -134,10 +147,10 @@ public class DerivedFieldPropertyProposal implements IJavaCompletionProposal {
     public String getAdditionalProposalInfo() {
         // 候補表示時に出力する説明文を組み立てる。
         StringBuilder code = new StringBuilder();
-        code.append("public class ");
+        code.append("public class "); //$NON-NLS-1$
         code.append(_fieldInfo.getTargetTypeName());
-        code.append(" ... {").append(LINE_SEPARATER);
-        code.append("...").append(LINE_SEPARATER).append("<b>");
+        code.append(" ... {").append(LINE_SEPARATER); //$NON-NLS-1$
+        code.append("...").append(LINE_SEPARATER).append("<b>"); //$NON-NLS-1$ //$NON-NLS-2$
         code.append(_fieldInfo.getConstantFieldSource());
         code.append(LINE_SEPARATER);
         code.append(_fieldInfo.getPropertyFieldSource());
@@ -145,8 +158,8 @@ public class DerivedFieldPropertyProposal implements IJavaCompletionProposal {
         code.append(_fieldInfo.getGetterMethodSource());
         code.append(LINE_SEPARATER);
         code.append(_fieldInfo.getSetterMethodSource());
-        code.append("</b>").append(LINE_SEPARATER).append("}");
-        return code.toString().replaceAll(LINE_SEPARATER, "<br>" + LINE_SEPARATER);
+        code.append("</b>").append(LINE_SEPARATER).append("}"); //$NON-NLS-1$ //$NON-NLS-2$
+        return code.toString().replaceAll(LINE_SEPARATER, "<br>" + LINE_SEPARATER); //$NON-NLS-1$
     }
 
     public IContextInformation getContextInformation() {
@@ -158,7 +171,7 @@ public class DerivedFieldPropertyProposal implements IJavaCompletionProposal {
      * @see org.eclipse.jface.text.contentassist.ICompletionProposal#getDisplayString()
      */
     public String getDisplayString() {
-        return "Create Derived Properties." + " : " + this._fieldInfo.getPropertyTypeName();
+        return Messages.QUICK_FIX_DERIVED_FIELD_PROPERTY + " : " + this._fieldInfo.getPropertyTypeName(); //$NON-NLS-2$
     }
 
     /**

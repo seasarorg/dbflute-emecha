@@ -704,7 +704,7 @@ public class NewOutSideSqlWizardPage extends NewTypeWizardPage {
         if (sqlName.matches("^[A-Z]")) {
             return sqlName;
         }
-        Pattern pattern = Pattern.compile("^((?=select|update|insert|delete)[a-z]{6})[A-Za-z]*");
+        Pattern pattern = Pattern.compile("^((?=select|update|insert|delete)[a-z]{6})[A-Za-z0-9]*");
         Matcher matcher = pattern.matcher(sqlName);
         if (matcher.matches()) {
             sqlName = sqlName.substring(matcher.group(1).length());

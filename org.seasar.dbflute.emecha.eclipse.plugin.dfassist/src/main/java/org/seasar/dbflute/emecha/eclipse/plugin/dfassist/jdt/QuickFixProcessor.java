@@ -1,5 +1,17 @@
 /*
+ * Copyright 2013 the Seasar Foundation and the Others.
  *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
  */
 package org.seasar.dbflute.emecha.eclipse.plugin.dfassist.jdt;
 
@@ -26,7 +38,6 @@ import org.eclipse.jdt.ui.text.java.IInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IProblemLocation;
 import org.eclipse.jdt.ui.text.java.IQuickFixProcessor;
-import org.seasar.dbflute.emecha.eclipse.plugin.dfassist.DfAssistPlugin;
 import org.seasar.dbflute.emecha.eclipse.plugin.dfassist.jdt.derived.DerivedFieldInfo;
 import org.seasar.dbflute.emecha.eclipse.plugin.dfassist.jdt.derived.DerivedFieldPropertyProposal;
 import org.seasar.dbflute.emecha.eclipse.plugin.dfassist.jdt.derived.DerivedType;
@@ -112,7 +123,6 @@ public class QuickFixProcessor implements IQuickFixProcessor {
         case ASTNode.QUALIFIED_NAME:
             DerivedFieldInfo fieldInfo = createDerivedFieldInfo(context, problem, (Name)selectedNode);
             ASTNode parent = selectedNode.getParent();
-            DfAssistPlugin.log("Problem:" + problem.getProblemId() + ", selectNode:" + selectedNode.getClass() + ", Parent-NodeType:" + parent.getNodeType() + ", Parent-Class:" + parent.getClass());
             if (parent instanceof MethodInvocation) {
                 MethodInvocation parentMethod = (MethodInvocation)parent;
                 String methodName = parentMethod.getName().getFullyQualifiedName();
