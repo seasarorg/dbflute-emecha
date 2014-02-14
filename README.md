@@ -8,6 +8,6 @@ Update site :
 
 
 Archive Download : 
-* [downlad](https://raw.github.com/seasarorg/dbflute-emecha/emecha.zip)
+* [downlad](https://raw.github.com/seasarorg/dbflute-emecha/master/emecha.zip)
 
 
