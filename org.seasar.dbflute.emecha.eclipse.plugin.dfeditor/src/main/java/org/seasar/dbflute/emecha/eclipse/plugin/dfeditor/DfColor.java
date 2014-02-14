@@ -1,3 +1,18 @@
+/*
+ * Copyright 2014 the Seasar Foundation and the Others.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ */
 package org.seasar.dbflute.emecha.eclipse.plugin.dfeditor;
 
 import org.eclipse.swt.SWT;
@@ -9,8 +24,6 @@ public enum DfColor {
     LINE_COMMENT(new RGB(0, 128, 0)),
     LIKE_SEARCH_MARK(new RGB(0, 0, 255)),
     VALIABLE(new RGB(100, 100, 255)),
-//	MAP_MARK(new RGB(128, 0, 128), SWT.BOLD),
-//	LIST_MARK(new RGB(128, 0, 128), SWT.BOLD),
     //FixedLiteralMark
     FIXED_LITERAL_MARK(new RGB(128, 0, 128), SWT.BOLD),
     SQL(new RGB(0, 128, 128)),

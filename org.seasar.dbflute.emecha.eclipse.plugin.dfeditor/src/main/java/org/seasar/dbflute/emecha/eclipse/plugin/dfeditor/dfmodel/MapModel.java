@@ -13,13 +13,22 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.rule;
+package org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel;
 
-import org.eclipse.jface.text.rules.IWhitespaceDetector;
+/**
+ * Map element model.
+ * <p>
+ * map:{
+ *      ...
+ * }
+ * </p>
+ */
+public class MapModel extends BlockModel {
 
-public class WhitespaceDetector implements IWhitespaceDetector {
+    public static final String START_BRACE = "map:{";
 
-    public boolean isWhitespace(char c) {
-        return (c == ' ' || c == '\t' || c == '\n' || c == '\r');
+    public MapModel() {
+        super("Map");
+        setStartBrace(START_BRACE);
     }
 }

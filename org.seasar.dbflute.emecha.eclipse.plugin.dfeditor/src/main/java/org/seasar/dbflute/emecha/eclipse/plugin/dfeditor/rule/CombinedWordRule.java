@@ -35,6 +35,7 @@ import org.eclipse.jface.text.rules.Token;
  * token is associated with that word.
  * </p>
  *
+ * This is extended org.eclipse.jdt.internal.ui.text.CombinedWordRule
  * @see IWordDetector
  * @since 3.0
  */

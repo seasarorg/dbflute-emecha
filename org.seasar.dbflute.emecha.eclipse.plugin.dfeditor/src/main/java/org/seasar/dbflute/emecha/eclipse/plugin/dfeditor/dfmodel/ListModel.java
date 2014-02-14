@@ -13,13 +13,21 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.rule;
+package org.seasar.dbflute.emecha.eclipse.plugin.dfeditor.dfmodel;
 
-import org.eclipse.jface.text.rules.IWhitespaceDetector;
+/**
+ * List element model.
+ * <p>
+ * list:{
+ *      ...
+ * }
+ * </p>
+ */
+public class ListModel extends BlockModel {
+    public static final String START_BRACE = "list:{";
 
-public class WhitespaceDetector implements IWhitespaceDetector {
-
-    public boolean isWhitespace(char c) {
-        return (c == ' ' || c == '\t' || c == '\n' || c == '\r');
+    public ListModel() {
+        super("List");
+        setStartBrace(START_BRACE);
     }
 }
