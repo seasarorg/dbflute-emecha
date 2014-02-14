@@ -1,7 +1,5 @@
-# EMecha #
-==============
-
-Eclipse Plugin for DBFlute.
+# EMecha is Eclipse Plugin for DBFlute. #
+--------------
 
 Update site : 
 * http://eclipse.seasar.org/updates/3.3/
