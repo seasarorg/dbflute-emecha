@@ -10,5 +10,5 @@ Archive Download :
 ### Release Note ###
 
 * [0.5.6](https://github.com/seasarorg/dbflute-emecha/releases/tag/0.5.6) 
- * Add OutsideSql link
- * Add Editor Support
+ * [Add OutsideSql link](https://github.com/seasarorg/dbflute-emecha/pull/1)
+ * [Add Editor Support](https://github.com/seasarorg/dbflute-emecha/pull/2)
