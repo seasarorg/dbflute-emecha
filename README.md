@@ -1,9 +1,9 @@
 # EMecha is Eclipse Plugin for DBFlute. #
 
-Update site (仮): 
-* https://raw.github.com/seasarorg/eclipse-3.3/master/
+Update site : 
+* http://eclipse.seasar.org/updates/3.3/
 
-Archive Download : 
+Archive Download For dropins : 
 * [downlad](https://raw.github.com/seasarorg/dbflute-emecha/master/emecha.zip)
 
 -----------
