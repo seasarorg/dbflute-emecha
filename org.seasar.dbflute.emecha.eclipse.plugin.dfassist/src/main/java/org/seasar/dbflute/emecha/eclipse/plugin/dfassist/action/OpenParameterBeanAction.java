@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the Seasar Foundation and the Others.
+ * Copyright 2014 the Seasar Foundation and the Others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ public class OpenParameterBeanAction extends AbstractOpenActionBase {
 
     @Override
     protected String getTargetPackageName(String packageName) {
-        // TODO 自動生成されたメソッド・スタブ
         return packageName + ".exbhv.pmbean";
     }
 

@@ -85,6 +85,22 @@
             name="OutsideSQL Link"
             targetId="org.eclipse.jdt.ui.javaCode">
       </hyperlinkDetector>
+      <hyperlinkDetector
+            activate="true"
+            class="org.seasar.dbflute.emecha.eclipse.plugin.dfassist.link.OutsideSqlFileHyperlinkDetector"
+            id="org.dbflute.emecha.assist.outsideSqlHyperlink_File"
+            name="OutsideSQL File Link"
+            modifierKeys="M3"
+            targetId="org.eclipse.jdt.ui.javaCode">
+      </hyperlinkDetector>
+      <hyperlinkDetector
+            activate="true"
+            class="org.seasar.dbflute.emecha.eclipse.plugin.dfassist.link.OutsideSqlEntityHyperlinkDetector"
+            id="org.dbflute.emecha.assist.outsideSqlHyperlink_Entity"
+            name="OutsideSQL Entity Link"
+            modifierKeys="M1+M3"
+            targetId="org.eclipse.jdt.ui.javaCode">
+      </hyperlinkDetector>
    </extension>
 
   <extension point="org.eclipse.ui.popupMenus">
