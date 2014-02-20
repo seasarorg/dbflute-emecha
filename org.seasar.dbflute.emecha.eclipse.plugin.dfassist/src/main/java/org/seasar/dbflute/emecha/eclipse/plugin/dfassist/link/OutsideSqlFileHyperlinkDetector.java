@@ -32,7 +32,7 @@ import friend.org.eclipse.jdt.internal.ui.javaeditor.JavaElementHyperlinkDetecto
  * @author schatten
  */
 @SuppressWarnings("restriction")
-public class OutsideSqlHyperlinkDetector extends JavaElementHyperlinkDetector {
+public class OutsideSqlFileHyperlinkDetector extends JavaElementHyperlinkDetector {
     /**
      * @see org.eclipse.jdt.internal.ui.javaeditor.JavaElementHyperlinkDetector#addHyperlinks(org.eclipse.jface.text.IRegion, org.eclipse.jdt.ui.actions.SelectionDispatchAction, org.eclipse.jdt.core.IJavaElement, boolean, org.eclipse.ui.texteditor.ITextEditor)
      */
@@ -47,18 +47,10 @@ public class OutsideSqlHyperlinkDetector extends JavaElementHyperlinkDetector {
                 if (sqlLink.existSqlFile()) {
                     hyperlinksCollector.add(sqlLink);
                 }
-                CustomizeEntityHyperlink entityLink = new CustomizeEntityHyperlink(wordRegion, openAction, (IType) element, qualify);
-                if (entityLink.existEntityType()) {
-                    hyperlinksCollector.add(entityLink);
-                }
             } else if (packageName.endsWith(".exentity.customize") || packageName.endsWith(".bsentity.customize")) {
                 SqlFileHyperlink sqlLink = new SqlFileHyperlink(wordRegion, openAction, (IType) element, qualify);
                 if (sqlLink.existSqlFile()) {
                     hyperlinksCollector.add(sqlLink);
-                }
-                ParameterBeanHyperlink pmbLink = new ParameterBeanHyperlink(wordRegion, openAction, (IType) element, qualify);
-                if (pmbLink.existPmbType()) {
-                    hyperlinksCollector.add(pmbLink);
                 }
             }
         } else if (element instanceof IField) {
