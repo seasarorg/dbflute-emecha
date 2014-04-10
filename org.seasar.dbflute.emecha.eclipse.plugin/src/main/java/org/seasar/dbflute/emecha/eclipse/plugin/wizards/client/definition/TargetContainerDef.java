@@ -16,8 +16,8 @@ public class TargetContainerDef {
     static {
         TARGET_CONTAINER_LIST.add(new TargetContainerDef("seasar", "2.4"));
         TARGET_CONTAINER_LIST.add(new TargetContainerDef("spring", "2.5"));
-        TARGET_CONTAINER_LIST.add(new TargetContainerDef("lucy", "0.5"));
         TARGET_CONTAINER_LIST.add(new TargetContainerDef("guice", "1.0"));
+        TARGET_CONTAINER_LIST.add(new TargetContainerDef("cdi", "1.0"));
     }
 
     // ===================================================================================
