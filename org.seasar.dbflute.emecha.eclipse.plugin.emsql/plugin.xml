@@ -41,6 +41,37 @@
                      label="New Outside Sql">
                </action>
          </objectContribution>
+         <objectContribution
+               adaptable="true"
+               id="org.seasar.dbflute.emecha.eclipse.plugin.emsql.scala.objectContribution"
+               nameFilter="*.scala"
+               objectClass="org.eclipse.core.resources.IFile">
+               <menu
+                     id="org.seasar.dbflute.emecha.eclipse.plugin.menu"
+                     label="EMecha"
+                     path="additions">
+                     <groupMarker name="additions2"/>
+               </menu>
+               <visibility>
+                   <and>
+                       <objectState
+                             name="projectNature"
+                             value="org.eclipse.jdt.core.javanature">
+                       </objectState>
+                       <objectState
+                             name="path"
+                             value="*/exbhv/*">
+                       </objectState>
+                   </and>
+               </visibility>
+               <action
+                     class="org.seasar.dbflute.emecha.eclipse.plugin.emsql.action.NewOutSideSqlWizardAction"
+                     id="org.seasar.dbflute.emecha.eclipse.plugin.emsql.NewOutSideSql"
+                     menubarPath="org.seasar.dbflute.emecha.eclipse.plugin.menu/additions2"
+                     enablesFor="1"
+                     label="New Outside Sql">
+               </action>
+         </objectContribution>
    </extension>
    <extension
        point="org.eclipse.ui.propertyPages">
@@ -56,11 +87,6 @@
                <instanceof
                      value="org.eclipse.jdt.core.IJavaProject">
                </instanceof>
-<!--
-               <instanceof
-                     value="org.eclipse.jdt.core.IPackageFragment">
-               </instanceof>
--->
             </or>
         </enabledWhen>
       </page>
