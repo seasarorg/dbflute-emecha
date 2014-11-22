@@ -15,9 +15,10 @@
  */
 package org.dbflute.emecha.synchronizer.preferences;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
-
 import org.dbflute.emecha.synchronizer.EMSynchronizer;
 
 /**
@@ -25,7 +26,6 @@ import org.dbflute.emecha.synchronizer.EMSynchronizer;
  */
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
-    private static int DEFAULT_LISTEN_PORT = 8386;
 
     /*
      * (non-Javadoc)
@@ -34,7 +34,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
      */
     public void initializeDefaultPreferences() {
         IPreferenceStore store = EMSynchronizer.getDefault().getPreferenceStore();
-        store.setDefault(PreferenceConstants.P_LISTEN_PORT, DEFAULT_LISTEN_PORT);
+        store.setDefault(PreferenceConstants.P_LISTEN_PORT, PreferenceConstants.DEFAULT_LISTEN_PORT);
+        EMSynchronizer.getDefault().getLog().log(new Status(IStatus.INFO, EMSynchronizer.PLUGIN_ID, "Synchronizer Initialized Port:" + store.getInt(PreferenceConstants.P_LISTEN_PORT)));
     }
 
 }

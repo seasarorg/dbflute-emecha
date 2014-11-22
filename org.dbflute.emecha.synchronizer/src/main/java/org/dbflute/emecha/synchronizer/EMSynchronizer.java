@@ -86,19 +86,21 @@ public class EMSynchronizer extends AbstractUIPlugin implements IStartup {
     }
 
     public void serverStart() {
+        int serverPort = 0;
         try {
             plugin.port = plugin.getPreferenceStore().getInt(PreferenceConstants.P_LISTEN_PORT);
+            serverPort = plugin.port;
             String hostname = "localhost";
-            HttpServer server = HttpServer.create(new InetSocketAddress(hostname, port), 0);
+            HttpServer server = HttpServer.create(new InetSocketAddress(hostname, serverPort), 0);
             threadPool = Executors.newFixedThreadPool(1);
             server.setExecutor(threadPool);
             server.createContext("/", new RefreshHandler());
             server.createContext("/refresh", new RefreshHandler());
             server.start();
-            getLog().log(new Status(IStatus.INFO, PLUGIN_ID, "Synchronizer server is started at port"+ port +"."));
+            getLog().log(new Status(IStatus.INFO, PLUGIN_ID, "Synchronizer server is started at Port:"+ serverPort +"."));
             this.server = server;
         } catch (IOException e) {
-            getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, "Synchronizer server is not started by error. (Port:" + port + ")", e));
+            getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, "Synchronizer server is not started by error. (Port:" + serverPort + ")", e));
             server = null;
         }
     }

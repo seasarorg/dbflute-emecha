@@ -21,5 +21,6 @@ package org.dbflute.emecha.synchronizer.preferences;
 public class PreferenceConstants {
 
     public static final String P_LISTEN_PORT = "listenPort";
+    public static final int DEFAULT_LISTEN_PORT = 8386;
 
 }
