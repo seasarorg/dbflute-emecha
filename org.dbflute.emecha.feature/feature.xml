@@ -2,7 +2,7 @@
 <feature
       id="org.dbflute.emecha.feature"
       label="DBFlute EMecha"
-      version="0.1.0">
+      version="0.1.1.qualifier">
 
    <description url="http://dbflute.seasar.org/ja/manual/function/helper/emecha">
       Eclipse Plugin for DBFlute
