@@ -114,6 +114,9 @@ public class RefreshHandler implements HttpHandler {
             exchange.sendResponseHeaders(200, output.size());
             OutputStream response = exchange.getResponseBody();
             response.write(output.toByteArray());
+            response.flush();
+            response.close();
+            exchange.close();
         }
     }
 
